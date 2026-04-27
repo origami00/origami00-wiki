@@ -190,10 +190,12 @@ const StatusBadge = ({ status }: StatusBadgeProps) => {
 
 interface AvatarProps {
   size?: number;
+  className?: string;
 }
 
-const Avatar = ({ size = 64 }: AvatarProps) => (
+const Avatar = ({ size = 64, className }: AvatarProps) => (
   <div
+    className={className}
     style={{
       width: size, height: size, borderRadius: "50%",
       background: "linear-gradient(145deg, #b8e6d8, #8dd0bc, #6ebeaf)",
@@ -283,6 +285,7 @@ function ProfileCard({ greeting }: ProfileCardProps) {
   const [hov, setHov] = useState(false);
   return (
     <section
+      className="profileCard"
       style={{
         ...card, padding: "28px 26px",
         background: hov ? C.cardHover : C.card,
@@ -296,8 +299,8 @@ function ProfileCard({ greeting }: ProfileCardProps) {
       <div style={{ fontSize: 13, color: C.accent, fontWeight: 500, marginBottom: 14, letterSpacing: "0.03em" }}>
         {greeting}, Nice to meet you!
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-        <Avatar size={72} />
+      <div className="profileInfo" style={{ display: "flex", alignItems: "center", gap: 18 }}>
+        <Avatar size={72} className="avatar" />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 5, flexWrap: "wrap" }}>
             <span style={{ fontSize: 20, fontWeight: 600, color: C.text, letterSpacing: "0.01em" }}>{profile.name}</span>
@@ -318,6 +321,7 @@ function ClockCard() {
   const { hours, minutes, seconds, dateStr } = useClock();
   return (
     <section
+      className="clockCard"
       style={{
         ...card, padding: "26px 20px",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
@@ -325,7 +329,7 @@ function ClockCard() {
       }}
       aria-label="时钟卡片"
     >
-      <div style={{
+      <div className="clockTime" style={{
         fontFamily: "'SF Mono', 'Fira Code', 'JetBrains Mono', 'Inter', monospace",
         fontSize: 44, fontWeight: 300, color: C.text,
         letterSpacing: 4, lineHeight: 1,
@@ -334,7 +338,7 @@ function ClockCard() {
         <span style={{ color: C.accent, animation: "blink 1s step-end infinite", fontWeight: 300 }}>:</span>
         {minutes}
       </div>
-      <div style={{ fontFamily: "'SF Mono', monospace", fontSize: 16, color: C.textMuted, marginTop: 6, fontWeight: 400, letterSpacing: 3, opacity: 0.7 }}>{seconds}</div>
+      <div className="clockSeconds" style={{ fontFamily: "'SF Mono', monospace", fontSize: 16, color: C.textMuted, marginTop: 6, fontWeight: 400, letterSpacing: 3, opacity: 0.7 }}>{seconds}</div>
       <div style={{ fontSize: 12.5, color: C.textSec, marginTop: 10, fontWeight: 400 }}>{dateStr}</div>
       <div style={{ fontSize: 10, color: C.textMuted, marginTop: 4, background: "rgba(110,190,175,0.08)", padding: "2px 10px", borderRadius: 8 }}>
         UTC+8
@@ -381,7 +385,7 @@ function CatCard({ onOpen }: CatCardProps) {
 
 function SocialLinks() {
   return (
-    <section style={{ ...card, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, padding: "14px 20px", background: "rgba(255,255,255,0.4)" }} aria-label="社交链接">
+    <section className="socialLinks" style={{ ...card, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, padding: "14px 20px", background: "rgba(255,255,255,0.4)" }} aria-label="社交链接">
       {socialLinks.map((s) => {
         const Icon = iconMap[s.icon] ?? Info;
         return (
@@ -423,6 +427,7 @@ function CalendarCard() {
   };
   return (
     <section
+      className="calendarCard"
       style={{
         ...card, padding: "18px 16px",
         display: "flex", flexDirection: "column",
@@ -431,13 +436,13 @@ function CalendarCard() {
       aria-label="日历"
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-        <button onClick={goPrev} style={nb} aria-label="上个月">
+        <button onClick={goPrev} className="navBtn" style={nb} aria-label="上个月">
           <ChevronLeft size={14} />
         </button>
         <span style={{ fontSize: 14, fontWeight: 600, color: C.text, letterSpacing: "0.02em" }}>
           {year}年 {monthName}
         </span>
-        <button onClick={goNext} style={nb} aria-label="下个月">
+        <button onClick={goNext} className="navBtn" style={nb} aria-label="下个月">
           <ChevronRight size={14} />
         </button>
       </div>
@@ -450,6 +455,7 @@ function CalendarCard() {
         {days.map((d, i) => (
           <div
             key={`day-${i}`}
+            className="dayCell"
             style={{
               fontSize: 12.5, borderRadius: 10, width: 30, height: 30,
               margin: "2px auto", display: "flex", alignItems: "center", justifyContent: "center",
@@ -524,6 +530,7 @@ function MusicPlayer() {
   const [hov, setHov] = useState(false);
   return (
     <section
+      className="musicPlayer"
       style={{
         ...card, padding: "22px",
         display: "flex", flexDirection: "column", justifyContent: "center",
@@ -537,6 +544,7 @@ function MusicPlayer() {
     >
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
         <div
+          className="disc"
           style={{
             width: 48, height: 48, borderRadius: "50%", flexShrink: 0, position: "relative",
             background: `conic-gradient(from 0deg, ${C.accent}40, ${C.accent}80, ${C.accent}, ${C.accent}80, ${C.accent}40)`,
@@ -570,7 +578,7 @@ function MusicPlayer() {
         <span>{totalStr}</span>
       </div>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
-        <button onClick={prev} style={{
+        <button onClick={prev} className="ctrlBtn" style={{
           width: 32, height: 32, borderRadius: 10, border: "none",
           background: "rgba(110,190,175,0.08)", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -578,7 +586,7 @@ function MusicPlayer() {
         }} aria-label="上一首">
           <SkipBack size={13} />
         </button>
-        <button onClick={toggle} style={{
+        <button onClick={toggle} className="ctrlBtn ctrlBtnMain" style={{
           width: 40, height: 40, borderRadius: 14, border: "none",
           background: C.accent, color: "#fff", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -587,7 +595,7 @@ function MusicPlayer() {
         }} aria-label={playing ? "暂停播放" : "开始播放"}>
           {playing ? <Pause size={16} /> : <Play size={16} style={{ marginLeft: 2 }} />}
         </button>
-        <button onClick={next} style={{
+        <button onClick={next} className="ctrlBtn" style={{
           width: 32, height: 32, borderRadius: 10, border: "none",
           background: "rgba(110,190,175,0.08)", cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -630,6 +638,7 @@ export default function App() {
 
   return (
     <div
+      className="appRoot"
       style={{
         minHeight: "100vh",
         background: "linear-gradient(160deg, #f5fffe 0%, #eafff7 30%, #edfff4 60%, #f4fffa 100%)",
@@ -767,6 +776,27 @@ export default function App() {
           .masonryColumns > * { margin-bottom: 10px; }
           .photoWallGrid { grid-template-columns: 1fr; }
           .photoWallItem img { height: 190px; }
+        }
+
+        @media (max-width: 480px) {
+          .appRoot { padding: 14px 10px !important; }
+          .profileCard { padding: 20px 16px !important; }
+          .profileCard .profileInfo { flex-direction: column; align-items: flex-start; gap: 14px; }
+          .profileCard .avatar { width: 56px !important; height: 56px !important; min-width: 56px !important; }
+          .clockCard { padding: 20px 14px !important; }
+          .clockCard .clockTime { font-size: 32px !important; letter-spacing: 2px !important; }
+          .clockCard .clockSeconds { font-size: 13px !important; }
+          .socialLinks { flex-wrap: wrap !important; gap: 10px !important; padding: 12px 14px !important; }
+          .socialLinks a { width: 42px !important; height: 42px !important; border-radius: 12px !important; }
+          .calendarCard { padding: 14px 12px !important; }
+          .calendarCard .dayCell { width: 26px !important; height: 26px !important; font-size: 11.5px !important; }
+          .calendarCard .navBtn { width: 24px !important; height: 24px !important; }
+          .musicPlayer { padding: 16px !important; }
+          .musicPlayer .disc { width: 40px !important; height: 40px !important; }
+          .musicPlayer .ctrlBtn { width: 30px !important; height: 30px !important; }
+          .musicPlayer .ctrlBtnMain { width: 36px !important; height: 36px !important; }
+          .sideNavBtn { font-size: 12px !important; padding: 6px 9px !important; }
+          .sideNavBtn svg { width: 14px !important; height: 14px !important; }
         }
       `}</style>
 
