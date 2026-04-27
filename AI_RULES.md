@@ -17,8 +17,8 @@
 
 ### 2.1 组件编写
 - 使用 **函数组件 + Hooks**，禁止类组件
-- 单文件组件集中定义（当前所有组件在 `App.jsx` 内）
-- 如果要新增组件，先检查是否应加入 `App.jsx` 现有结构，而非创建新文件
+- 使用 **TypeScript**（`.tsx`/`.ts`），所有组件 props 和 hook 返回值必须有类型定义
+- 类型定义集中在 `src/types/index.ts`，组件内接口定义在文件顶部
 - 组件内同时包含：组件定义 + 内联样式 + `<style>` 标签（保持三层样式一致性）
 
 ### 2.2 样式规则
@@ -30,7 +30,7 @@
 - 响应式断点固定为 4 档：`>1100px` / `860-1100px` / `≤860px` / `≤520px`
 
 ### 2.3 设计 Token
-- 颜色定义在 `C` 对象中（`siteData.js` 或 `App.jsx` 顶部）
+- 颜色定义在 `C` 对象中（`App.tsx` 顶部）
 - 卡片样式定义在 `card` 对象中
 - 新增设计元素时必须复用现有 token，不要硬编码新色值
 
@@ -41,20 +41,24 @@
 ### 3.1 目录规范
 ```
 src/
-├── App.jsx              # 主组件（所有组件定义在这里）
-├── main.jsx             # 入口 + 路由
+├── App.tsx              # 主组件（所有组件定义在这里，待拆分）
+├── main.tsx             # 入口 + 路由
 ├── index.css            # 全局样式
+├── vite-env.d.ts        # Vite 类型声明
+├── types/
+│   └── index.ts         # 所有 TypeScript 接口定义
 ├── data/
-│   └── siteData.js      # 所有数据集中管理
+│   └── siteData.ts      # 所有数据集中管理
 └── pages/
-    ├── PhotoWallPage.jsx  # 照片墙页面
-    └── SubPage.jsx        # 通用子页面模板
+    ├── PhotoWallPage.tsx  # 照片墙页面
+    └── SubPage.tsx        # 通用子页面模板
 ```
 
 ### 3.2 文件操作规则
-- **新增页面**：在 `src/pages/` 下创建文件，在 `App.jsx` 的路由中注册
-- **新增卡片组件**：在 `App.jsx` 中定义，遵循现有卡片模式
-- **修改数据**：只改 `src/data/siteData.js`
+- **新增页面**：在 `src/pages/` 下创建 `.tsx` 文件，在 `App.tsx` 的路由中注册
+- **新增卡片组件**：在 `App.tsx` 中定义，遵循现有卡片模式
+- **修改数据**：只改 `src/data/siteData.ts`
+- **新增类型**：在 `src/types/index.ts` 中添加接口
 - **新增公共样式**：加到 `index.css`
 - **组件级样式**：加到对应组件内的 `<style>` 标签
 - **禁止**创建 `src/components/` 目录（除非明确拆分重构）
@@ -63,9 +67,9 @@ src/
 
 ## 4. 数据管理
 
-- 所有可配置数据集中在 `src/data/siteData.js`
+- 所有可配置数据集中在 `src/data/siteData.ts`
 - 组件内禁止硬编码文字、链接、图片路径
-- 修改网站内容时，只改 `siteData.js`，不要动组件代码
+- 修改网站内容时，只改 `siteData.ts`，不要动组件代码
 - 数据结构保持现有格式，不要随意重构
 
 ---
@@ -78,6 +82,8 @@ src/
   - `react-router-dom` — 路由
   - `lucide-react` — 图标
   - `vite` + `@vitejs/plugin-react` — 构建工具
+  - `typescript` + `@types/react` + `@types/react-dom` — 类型支持
+  - `eslint` + `prettier` — 代码规范
 - 不要引入：CSS 框架、组件库、状态管理库、动画库、HTTP 客户端
 
 ---
@@ -89,20 +95,20 @@ src/
 | 1 | 引入新的 CSS 方案 | 与三层样式策略冲突 |
 | 2 | 引入新的 npm 依赖 | 保持轻量 |
 | 3 | 将组件拆分为独立文件 | 除非用户明确要求重构 |
-| 4 | 使用 TypeScript | 保持简单 |
-| 5 | 添加 ESLint/Prettier | 除非用户明确要求 |
-| 6 | 修改路由结构 | 除非用户明确要求 |
-| 7 | 删除现有组件或功能 | 除非用户明确要求 |
-| 8 | 添加暗色模式 | 除非用户明确要求 |
-| 9 | 修改 `vite.config.js` | 除非用户明确要求 |
-| 10 | 执行 `git push` 或破坏性 git 操作 | 除非用户明确要求 |
+| 4 | 修改路由结构 | 除非用户明确要求 |
+| 5 | 删除现有组件或功能 | 除非用户明确要求 |
+| 6 | 添加暗色模式 | 除非用户明确要求 |
+| 7 | 修改 `vite.config.ts` | 除非用户明确要求 |
+| 8 | 执行 `git push` 或破坏性 git 操作 | 除非用户明确要求 |
 
 ---
 
 ## 7. 构建与运行
 
 - 开发服务器：`npm run dev`（Vite）
-- 生产构建：`npm run build`
+- 生产构建：`npm run build`（tsc + vite build）
+- 代码检查：`npm run lint`（ESLint）
+- 代码格式化：`npm run format`（Prettier）
 - 构建产物在 `dist/` 目录
 - 不要手动修改 `dist/` 下的文件
 
@@ -140,7 +146,7 @@ src/
 - 星期标题固定为 `一 二 三 四 五 六 日`
 
 ### 10.3 MusicPlayer
-- 当前为模拟播放，不要尝试接入真实音频 API（除非用户要求）
+- 当前为模拟播放，Phase 3 将用 `<audio>` 替换
 - 进度条使用 `setInterval` 驱动
 - 旋转唱片使用 `spin` 动画
 
@@ -165,3 +171,4 @@ src/
 | 日期 | 版本 | 变更内容 |
 |------|------|----------|
 | 2026-04-27 | v1.0 | 初始版本，11 条规则 |
+| 2026-04-27 | v1.1 | 更新文件结构（.jsx→.tsx）、依赖列表、禁止事项，移除过时规则 |

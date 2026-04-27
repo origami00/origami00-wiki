@@ -4,145 +4,123 @@
 
 ---
 
-## 立即执行（P0）
+## 已完成
 
-### 1. 初始化 Git 仓库
-- 运行 `git init` 创建版本控制
-- 创建 `.gitignore`（排除 `node_modules/`、`dist/`、`.claude/`）
-- 首次提交：所有现有文件
-- **为什么**：没有版本控制就无法安全地进行任何修改
-
-### 2. 替换真实内容
-- 更新 `siteData.js` 中的 `profile` 对象（真实昵称、签名、位置）
-- 更新 `socialLinks` 中的 URL（真实 GitHub/Bilibili/抖音主页地址）
-- 更新 `latestContent` 中的链接（指向真实文章或项目）
-- 更新 `subPageContent` 中的子页面内容和外链
-- **为什么**：当前所有数据均为占位符，网站无法对外展示
-
-### 3. 替换照片墙图片
-- 准备 6 张真实照片（建议尺寸 800x600 以上）
-- 放入 `public/` 目录或使用真实 CDN 地址
-- 更新 `siteData.js` 中的 `photoWallItems`
-- **为什么**：占位图是用户可见的最大视觉问题
+- [x] **初始化 Git 仓库** — `git init` + `.gitignore`，首次提交已完成
+- [x] **集成 TypeScript** — 所有文件迁移为 `.tsx`/`.ts`，`src/types/index.ts` 定义全部接口，`tsc --noEmit` 通过
+- [x] **配置 ESLint + Prettier** — `eslint.config.js` + `.prettierrc`，`npm run lint` 通过
+- [x] **更新 index.html** — 脚本引用从 `main.jsx` 改为 `main.tsx`
 
 ---
 
-## 短期执行（P1）
+## Phase 2：组件拆分 + 路由重构 + 样式统一
 
-### 4. 替换头像
-- 准备真实头像图片（建议正方形，200x200 以上）
-- 放入 `public/` 目录
-- 修改 `ProfileCard` 组件，从 emoji 😺 切换为 `<img>` 标签
-- **为什么**：emoji 头像显得不专业
+**复杂度：XL | 风险：高 | 预估：4-5天**
 
-### 5. 添加 Favicon
-- 准备 `favicon.ico`（16x16 和 32x32）
-- 准备 `apple-touch-icon.png`（180x180）
-- 在 `index.html` 中添加 `<link rel="icon">`
-- **为什么**：浏览器标签页无图标影响品牌感
+### 1. 提取设计令牌和工具函数
+- 创建 `src/tokens/design.ts` — 导出 `C`（颜色）和 `card`（基础卡片样式）
+- 创建 `src/utils/format.ts` — 提取 `fmt()` 时间格式化函数
+- 创建 `src/utils/icons.ts` — 提取 `iconMap` 映射
+- **为什么**：为组件拆分提供共享依赖
 
-### 6. 添加 SEO 元标签
-- 在 `index.html` 中添加 `<title>`、`<meta description>`、`<meta keywords>`
-- 添加 Open Graph 标签（og:title、og:description、og:image）
-- 添加 Twitter Card 标签
-- **为什么**：搜索引擎和社交媒体分享需要
+### 2. 提取自定义 Hooks
+- `src/hooks/useClock.ts`（~25行）
+- `src/hooks/useCalendar.ts`（~25行）
+- `src/hooks/useAudioPlayer.ts`（~40行，Phase 3 会重写）
+- **为什么**：逻辑与 UI 分离，便于独立测试
 
----
+### 3. 拆分组件（按依赖从少到多）
+- 原子组件：StatusBadge, Avatar, CatSitting
+- 卡片组件：ProfileCard, ClockCard, CatCard, SocialLinks, CalendarCard, LatestContent, MusicPlayer
+- 布局组件：UserSidebar
+- **为什么**：每个文件 ≤200 行，便于维护
 
-## 中期执行（P2）
+### 4. 样式体系统一
+- 从 App.tsx `<style>{}` 标签提取为独立 CSS 文件：
+  - `src/styles/animations.css` — keyframe 动画
+  - `src/styles/layout.css` — grid 布局
+  - `src/styles/responsive.css` — 媒体查询
+  - `src/styles/components.css` — sidebar、photo wall 等
+- **为什么**：消除内联样式中的 `!important`，提升可维护性
 
-### 7. 修复时钟性能问题
-- **问题**：`useClock()` 在 App 级调用，每秒触发全组件树重渲染
-- **方案**：将 `useClock()` 下沉到 `ClockCard` 组件内部
-- 或使用 `React.memo` 包裹不受时钟影响的子组件
-- **为什么**：不必要的重渲染影响整体性能
-
-### 8. 组件拆分
-- 将 `App.jsx`（760 行）拆分为独立组件文件：
-  ```
-  src/
-  ├── components/
-  │   ├── ProfileCard.jsx
-  │   ├── ClockCard.jsx
-  │   ├── CalendarCard.jsx
-  │   ├── CatCard.jsx
-  │   ├── SocialLinks.jsx
-  │   ├── MusicPlayer.jsx
-  │   ├── LatestContent.jsx
-  │   └── UserSidebar.jsx
-  ├── hooks/
-  │   ├── useClock.js
-  │   ├── useCalendar.js
-  │   └── useAudioPlayer.js
-  └── App.jsx（仅保留路由和布局）
-  ```
-- **为什么**：单文件 760 行难以维护
-
-### 9. 音乐播放器真实音频
-- 准备 3 首音频文件（MP3 格式）放入 `public/audio/`
-- 使用 Web Audio API 或 `<audio>` 元素替换 setInterval 模拟
-- 更新 `siteData.js` 中的 `musicList` 路径
-- **为什么**：模拟播放器功能不完整
+### 5. 路由重构
+- 创建 `src/layouts/MainLayout.tsx` — 抽象 grid + sidebar + `<Outlet />`
+- 重构 `src/main.tsx`：使用嵌套路由 + `React.lazy` 懒加载
+- 创建 `src/pages/HomePage.tsx` — 从 App.tsx 提取首页逻辑
+- App.tsx 精简为路由壳（~30行）
+- **为什么**：当前所有路由渲染同一组件，违背 React Router 设计初衷
 
 ---
 
-## 长期执行（P3）
+## Phase 3：功能开发
 
-### 10. 添加 ESLint + Prettier
-- 安装 `eslint`、`prettier` 及 React 相关插件
-- 创建 `.eslintrc.cjs` 和 `.prettierrc` 配置文件
-- 配置编辑器自动格式化
-- **为什么**：代码质量一致性
+**复杂度：XL | 风险：中 | 预估：5-7天**
 
-### 11. 添加测试
+### 6. 真实音频播放器
+- 重写 `useAudioPlayer` hook：使用 `<audio>` 元素替代 `setInterval`
+- MusicPlayer 组件更新：自定义进度条拖拽（onMouseDown/onTouchStart）
+- 在 `public/audio/` 放置 3 个 mp3 文件
+- **验证点**：播放控制可点击并产生音频输出，进度条拖拽定位误差 ≤1秒
+
+### 7. 文章/项目展示页
+- 创建 `src/data/articlesData.ts` — 至少 3 篇示例文章数据
+- 创建 `src/data/projectsData.ts` — 至少 3 个示例项目数据
+- 新增 `src/pages/ArticlesPage.tsx` 和 `src/pages/ProjectsPage.tsx`
+- 新增组件：ArticleCard, ArticleDetail, ProjectCard, ProjectDetail, SkeletonCard, TagBadge
+- **验证点**：页面加载后展示 ≥3 个卡片，点击可查看详情
+
+---
+
+## Phase 4：体验优化
+
+**复杂度：L | 风险：中 | 预估：3-4天**
+
+### 8. 移动端响应式增强
+- 新增 `@media (max-width: 480px)` 断点
+- 移除 SubPage 中硬编码的 `min-height: 500px`
+- **验证点**：320px-768px 宽度下布局完整无溢出
+
+### 9. 页面切换过渡动画
+- MainLayout 中实现淡入/滑出效果，总时长 ≤300ms
+- **验证点**：路由切换时出现动画效果
+
+### 10. 组件懒加载
+- 创建 `useIntersectionObserver` hook
+- 非首屏卡片滚动靠近时才渲染
+- **验证点**：首屏渲染时间 ≤2秒（3G 模拟）
+
+---
+
+## Phase 5：测试
+
+**复杂度：M | 风险：低 | 预估：3-4天**
+
+### 11. 添加单元测试
 - 安装 Vitest + React Testing Library
-- 为关键组件编写单元测试
-- 考虑 Playwright 端到端测试（权限已配置）
-- **为什么**：防止回归 bug
-
-### 12. 暗色模式
-- 扩展设计系统，添加暗色配色方案
-- 使用 CSS 变量 + `prefers-color-scheme` 媒体查询
-- 在导航栏添加切换按钮
-- **为什么**：用户偏好和可访问性
-
-### 13. 部署配置
-- 选择部署平台（推荐 Vercel 或 GitHub Pages）
-- 创建部署配置文件
-- 配置自定义域名（可选）
-- **为什么**：网站需要上线才能被访问
-
-### 14. 错误边界
-- 添加 React Error Boundary 包裹根组件
-- 为图片添加 onError 回退
-- 添加加载状态（Skeleton 组件）
-- **为什么**：提升健壮性和用户体验
-
-### 15. 404 页面
-- 创建 NotFound 组件
-- 在路由中添加 `*` 路径指向 404 页面
-- **为什么**：避免静默重定向
+- 覆盖：utils/format.ts、useClock、useCalendar、useAudioPlayer、MusicPlayer、LatestContent
+- **验证点**：覆盖率 ≥80%，测试全部通过
 
 ---
 
-## 检查清单模板
-
-每完成一项，更新对应状态：
+## 检查清单
 
 ```
-- [ ] 1. 初始化 Git 仓库
-- [ ] 2. 替换真实内容
-- [ ] 3. 替换照片墙图片
-- [ ] 4. 替换头像
-- [ ] 5. 添加 Favicon
-- [ ] 6. 添加 SEO 元标签
-- [ ] 7. 修复时钟性能问题
-- [ ] 8. 组件拆分
-- [ ] 9. 音乐播放器真实音频
-- [ ] 10. 添加 ESLint + Prettier
-- [ ] 11. 添加测试
-- [ ] 12. 暗色模式
-- [ ] 13. 部署配置
-- [ ] 14. 错误边界
-- [ ] 15. 404 页面
+Phase 2:
+- [ ] 提取设计令牌和工具函数
+- [ ] 提取自定义 Hooks
+- [ ] 拆分组件（11 个文件）
+- [ ] 样式体系统一
+- [ ] 路由重构
+
+Phase 3:
+- [ ] 真实音频播放器
+- [ ] 文章/项目展示页
+
+Phase 4:
+- [ ] 移动端响应式增强
+- [ ] 页面切换过渡动画
+- [ ] 组件懒加载
+
+Phase 5:
+- [ ] 添加单元测试
 ```

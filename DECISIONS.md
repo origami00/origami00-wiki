@@ -40,7 +40,7 @@
 - **决策**：所有组件、Hooks、样式定义集中在 `App.jsx` 一个文件（760 行）
 - **理由**：个人主页规模小（6 个文件 1121 行源码），单文件便于快速开发和全局把控
 - **已知代价**：随着功能增长，维护难度增加；不利于团队协作；不利于代码复用
-- **影响**：后续扩展时需要考虑拆分
+- **影响**：后续扩展时需要考虑拆分（已列入 Phase 2 计划）
 
 ---
 
@@ -90,7 +90,7 @@
 - **决策**：音乐播放器使用 `setInterval` 模拟进度，不加载真实音频文件
 - **理由**：初始阶段快速实现 UI 原型，避免音频文件管理和 Web Audio API 的复杂度
 - **已知代价**：功能仅为 UI 展示，无真实播放能力
-- **影响**：后续需要替换为真实音频实现
+- **影响**：Phase 3 将用 `<audio>` 元素替换为真实音频播放
 
 ---
 
@@ -100,17 +100,71 @@
 - **决策**：路由配置中所有路径都渲染 `<App />`，内部通过 `useLocation().pathname` 判断显示内容
 - **理由**：共享侧边导航和全局布局，避免在每个页面重复包裹 Layout 组件
 - **已知代价**：路由切换时整个 App 组件重新渲染，而非仅切换内容区域
-- **影响**：页面切换动画可以统一控制，但性能不是最优
+- **影响**：Phase 2 将重构为嵌套路由 + MainLayout 架构
 
 ---
 
-## D010 — 不引入 TypeScript
+## D010 — 迁移至 TypeScript
 
-- **日期**：项目初始阶段
-- **决策**：使用 JavaScript (JSX) 而非 TypeScript
-- **理由**：个人主页项目规模小，类型安全的收益不足以覆盖 TypeScript 的配置和编码成本
-- **已知代价**：无类型检查，重构时风险较高
-- **影响**：后续如需拆分组件或增加复杂逻辑，可考虑迁移 TypeScript
+- **日期**：2026-04-27（Phase 1.2）
+- **决策**：将所有 `.jsx`/`.js` 文件迁移为 `.tsx`/`.ts`，启用 strict 模式
+- **备选方案**：
+  - 保持 JavaScript — 无类型检查，重构时风险高
+  - 渐进式 JSDoc 类型注解 — 不够严格，IDE 支持弱
+- **理由**：Phase 2 需要大规模组件拆分，TypeScript 类型系统能在拆分过程中捕获错误；strict 模式确保代码质量
+- **实施**：
+  - 安装 `typescript`、`@types/react`、`@types/react-dom`
+  - 创建 `tsconfig.json`（strict 模式，react-jsx）
+  - 创建 `src/types/index.ts` 定义全部接口（Profile, SocialLink, MusicTrack 等）
+  - 创建 `src/vite-env.d.ts` 提供 Vite 类型声明
+  - 所有文件重命名：`vite.config.js` → `.ts`，`main.jsx` → `.tsx`，`App.jsx` → `.tsx`，`siteData.js` → `.ts`
+  - 为所有组件 props、hooks 返回值、工具函数添加类型注解
+- **影响**：`tsc --noEmit` 无报错，IDE 智能提示完整
+
+---
+
+## D011 — 配置 ESLint + Prettier
+
+- **日期**：2026-04-27（Phase 1.3）
+- **决策**：使用 ESLint flat config + Prettier，与 TypeScript 集成
+- **实施**：
+  - 安装 `eslint`、`@eslint/js`、`typescript-eslint`、`prettier`、`eslint-config-prettier`、`eslint-plugin-react-hooks`
+  - 创建 `eslint.config.js`（flat config 格式）
+  - 创建 `.prettierrc`（semi: true, singleQuote: false, printWidth: 100）
+  - 添加 scripts：`lint`、`lint:fix`、`format`
+  - 更新 `build` 脚本为 `tsc --noEmit && vite build`
+- **影响**：`npm run lint` 无报错，代码格式统一
+
+---
+
+## D012 — 音频数据源：本地 mp3 文件
+
+- **日期**：2026-04-27
+- **决策**：音乐播放器先用本地 mp3 文件测试，不对接网易云 API
+- **备选方案**：
+  - 对接网易云非官方 API — 需要后端代理，存在被封 IP 风险
+  - 使用公开免费音频源 — 音质和稳定性不可控
+  - 保持模拟播放 — 功能不完整
+- **理由**：个人主页项目无后端服务，本地 mp3 是最简单可靠的方案
+- **影响**：在 `public/audio/` 放置 mp3 文件，前端 `<audio>` 直接播放
+
+---
+
+## D013 — 跳过后端 API 接入
+
+- **日期**：2026-04-27
+- **决策**：暂不实现动态数据拉取，保持 `siteData.ts` 静态数据
+- **理由**：无已部署的后端服务，前端先实现 UI 和交互，后续有 API 时再接入
+- **影响**：LatestContent 等组件保持静态数据，不新增 useFetch hook 和 API 层
+
+---
+
+## D014 — 文章/项目内容用示例数据填充
+
+- **日期**：2026-04-27
+- **决策**：文章/项目展示页先用示例数据搭建，后续替换为真实内容
+- **理由**：页面结构和组件优先，内容可随时替换
+- **影响**：创建 `articlesData.ts` 和 `projectsData.ts`，包含 3 篇示例文章和 3 个示例项目
 
 ---
 
