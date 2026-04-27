@@ -90,6 +90,17 @@ export default function MainLayout() {
 
         .catCard { transition: transform .28s ease, box-shadow .28s ease; }
 
+        .playlistPanel { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .playlistPanel.open { max-height: 320px; overflow-y: auto; }
+        .playlistItem { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; cursor: pointer; font-size: 12px; color: ${C.textSec}; transition: background 0.15s; }
+        .playlistItem:hover { background: rgba(110,190,175,0.06); }
+        .playlistItem.active { background: rgba(110,190,175,0.1); color: ${C.accent}; font-weight: 500; }
+        .playlistItem .moveBtn { opacity: 0; transition: opacity 0.15s; }
+        .playlistItem:hover .moveBtn { opacity: 1; }
+        .modeBtn { width: 28px; height: 28px; border-radius: 8px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: ${C.textMuted}; transition: all 0.2s; }
+        .modeBtn:hover { background: rgba(110,190,175,0.08); }
+        .modeBtn.active { color: ${C.accent}; }
+
         .photoCover {
           width: 100%;
           max-height: 340px;

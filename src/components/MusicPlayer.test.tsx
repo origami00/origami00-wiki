@@ -44,6 +44,7 @@ describe("MusicPlayer", () => {
 
   it("renders track info", () => {
     render(<MusicPlayer />);
-    expect(screen.getByText("Banger Machine")).toBeInTheDocument();
+    const matches = screen.getAllByText("Banger Machine");
+    expect(matches.length).toBeGreaterThanOrEqual(1);
   });
 });
