@@ -40,6 +40,7 @@ export const navigation: NavItem[] = [
   { label: "我的项目", icon: "Sparkles", href: "/projects" },
   { label: "关于网站", icon: "Info", href: "/about" },
   { label: "推荐分享", icon: "Heart", href: "/recommendations" },
+  { label: "管理", icon: "Settings", href: "/admin" },
 ];
 
 export const latestContent: ContentItem[] = [

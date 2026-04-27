@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { C, card } from "../tokens/design";
-import { articles } from "../data/articlesData";
+import { useContentManager } from "../hooks/useContentManager";
 import type { Article } from "../types";
 
 function ArticleDetail({ article, onBack }: { article: Article; onBack: () => void }) {
@@ -56,6 +56,7 @@ function ArticleDetail({ article, onBack }: { article: Article; onBack: () => vo
 }
 
 export default function ArticlesPage() {
+  const { articles } = useContentManager();
   const [selected, setSelected] = useState<Article | null>(null);
 
   if (selected) {

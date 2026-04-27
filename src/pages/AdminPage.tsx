@@ -1,0 +1,234 @@
+import { useState } from "react";
+import { Plus, Pencil, Trash2, RotateCcw, X, Check, FileText, Sparkles } from "lucide-react";
+import { C, card } from "../tokens/design";
+import { useContentManager } from "../hooks/useContentManager";
+import type { Article, Project } from "../types";
+
+type Tab = "articles" | "projects";
+type ArticleForm = Omit<Article, "id">;
+type ProjectForm = Omit<Project, "id">;
+
+const emptyArticle: ArticleForm = { title: "", summary: "", date: "", tag: "", emoji: "", content: "", url: "" };
+const emptyProject: ProjectForm = { title: "", description: "", date: "", tags: [], emoji: "", status: "进行中", url: "" };
+
+const inputStyle: React.CSSProperties = {
+  width: "100%", padding: "8px 12px", borderRadius: 10, border: `1px solid rgba(110,190,175,0.2)`,
+  background: "rgba(255,255,255,0.5)", fontSize: 13, color: C.text, outline: "none",
+  transition: "border-color 0.2s",
+};
+const labelStyle: React.CSSProperties = { fontSize: 12, color: C.textSec, fontWeight: 500, marginBottom: 4, display: "block" };
+const btnBase: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: 5, padding: "7px 14px",
+  borderRadius: 10, border: "none", fontSize: 12.5, fontWeight: 500, cursor: "pointer", transition: "all 0.2s",
+};
+
+export default function AdminPage() {
+  const cm = useContentManager();
+  const [tab, setTab] = useState<Tab>("articles");
+  const [editing, setEditing] = useState<string | null>(null);
+  const [form, setForm] = useState<ArticleForm | ProjectForm>(emptyArticle);
+  const [showForm, setShowForm] = useState(false);
+
+  const isArticle = tab === "articles";
+
+  const openNew = () => {
+    setEditing(null);
+    setForm(isArticle ? { ...emptyArticle } : { ...emptyProject });
+    setShowForm(true);
+  };
+
+  const openEdit = (item: Article | Project) => {
+    setEditing(item.id);
+    if (isArticle) {
+      const a = item as Article;
+      setForm({ title: a.title, summary: a.summary, date: a.date, tag: a.tag, emoji: a.emoji, content: a.content, url: a.url ?? "" });
+    } else {
+      const p = item as Project;
+      setForm({ title: p.title, description: p.description, date: p.date, tags: p.tags, emoji: p.emoji, status: p.status, url: p.url ?? "" });
+    }
+    setShowForm(true);
+  };
+
+  const handleDelete = (id: string, title: string) => {
+    if (!confirm(`确认删除「${title}」？`)) return;
+    if (isArticle) cm.deleteArticle(id);
+    else cm.deleteProject(id);
+  };
+
+  const handleSave = () => {
+    if (isArticle) {
+      const a = form as ArticleForm;
+      if (!a.title.trim()) return;
+      if (editing) cm.updateArticle(editing, a);
+      else cm.addArticle(a);
+    } else {
+      const p = form as ProjectForm;
+      if (!p.title.trim()) return;
+      if (editing) cm.updateProject(editing, p);
+      else cm.addProject(p);
+    }
+    setShowForm(false);
+    setEditing(null);
+  };
+
+  const handleReset = () => {
+    if (!confirm("确认重置为默认数据？所有自定义内容将丢失。")) return;
+    if (isArticle) cm.resetArticles();
+    else cm.resetProjects();
+  };
+
+  const set = (key: string, value: string | string[]) => setForm((f) => ({ ...f, [key]: value }));
+
+  const items = isArticle ? cm.articles : cm.projects;
+
+  return (
+    <section style={{ ...card, padding: "28px 24px", background: "rgba(255,255,255,0.45)", display: "flex", flexDirection: "column", gap: 18 }} aria-label="内容管理">
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+        <h2 style={{ fontSize: 22, fontWeight: 600, color: C.text }}>内容管理</h2>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button onClick={openNew} style={{ ...btnBase, background: C.accent, color: "#fff" }}>
+            <Plus size={14} />{isArticle ? "新增文章" : "新增项目"}
+          </button>
+          <button onClick={handleReset} style={{ ...btnBase, background: "rgba(110,190,175,0.08)", color: C.textSec }}>
+            <RotateCcw size={13} />重置
+          </button>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{ display: "flex", gap: 4, background: "rgba(110,190,175,0.06)", borderRadius: 12, padding: 3, alignSelf: "flex-start" }}>
+        {([["articles", "文章管理", FileText], ["projects", "项目管理", Sparkles]] as [Tab, string, typeof FileText][]).map(([key, label, Icon]) => (
+          <button
+            key={key}
+            onClick={() => { setTab(key); setShowForm(false); setEditing(null); }}
+            style={{
+              ...btnBase, padding: "8px 16px", borderRadius: 10,
+              background: tab === key ? "#fff" : "transparent",
+              color: tab === key ? C.accent : C.textMuted,
+              boxShadow: tab === key ? "0 1px 4px rgba(0,0,0,0.06)" : "none",
+            }}
+          >
+            <Icon size={14} />{label}
+          </button>
+        ))}
+      </div>
+
+      {/* Form */}
+      {showForm && (
+        <div style={{ background: "rgba(255,255,255,0.5)", borderRadius: 16, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 12, border: `1px solid rgba(110,190,175,0.12)` }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 4 }}>{editing ? "编辑" : "新增"}{isArticle ? "文章" : "项目"}</div>
+
+          {/* Title */}
+          <div>
+            <label style={labelStyle}>标题 *</label>
+            <input style={inputStyle} value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="输入标题" />
+          </div>
+
+          {/* Emoji + Date */}
+          <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ flex: "0 0 80px" }}>
+              <label style={labelStyle}>Emoji</label>
+              <input style={inputStyle} value={form.emoji} onChange={(e) => set("emoji", e.target.value)} placeholder="emoji" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>日期</label>
+              <input style={inputStyle} type="date" value={form.date} onChange={(e) => set("date", e.target.value)} />
+            </div>
+          </div>
+
+          {/* Article-specific fields */}
+          {isArticle && (
+            <>
+              <div>
+                <label style={labelStyle}>标签</label>
+                <input style={inputStyle} value={(form as ArticleForm).tag} onChange={(e) => set("tag", e.target.value)} placeholder="如：前端、AI、游戏" />
+              </div>
+              <div>
+                <label style={labelStyle}>摘要</label>
+                <input style={inputStyle} value={(form as ArticleForm).summary} onChange={(e) => set("summary", e.target.value)} placeholder="一句话描述" />
+              </div>
+              <div>
+                <label style={labelStyle}>正文内容</label>
+                <textarea style={{ ...inputStyle, minHeight: 120, resize: "vertical", lineHeight: 1.6 }} value={(form as ArticleForm).content} onChange={(e) => set("content", e.target.value)} placeholder="支持 Markdown 格式" />
+              </div>
+            </>
+          )}
+
+          {/* Project-specific fields */}
+          {!isArticle && (
+            <>
+              <div>
+                <label style={labelStyle}>描述</label>
+                <textarea style={{ ...inputStyle, minHeight: 80, resize: "vertical", lineHeight: 1.6 }} value={(form as ProjectForm).description} onChange={(e) => set("description", e.target.value)} placeholder="项目简介" />
+              </div>
+              <div style={{ display: "flex", gap: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <label style={labelStyle}>标签（逗号分隔）</label>
+                  <input style={inputStyle} value={(form as ProjectForm).tags.join(", ")} onChange={(e) => set("tags", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="React, TypeScript" />
+                </div>
+                <div style={{ flex: "0 0 120px" }}>
+                  <label style={labelStyle}>状态</label>
+                  <select style={{ ...inputStyle, cursor: "pointer" }} value={(form as ProjectForm).status} onChange={(e) => set("status", e.target.value)}>
+                    <option value="进行中">进行中</option>
+                    <option value="已完成">已完成</option>
+                    <option value="暂停">暂停</option>
+                  </select>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* URL */}
+          <div>
+            <label style={labelStyle}>链接（可选）</label>
+            <input style={inputStyle} value={form.url ?? ""} onChange={(e) => set("url", e.target.value)} placeholder="https://..." />
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
+            <button onClick={() => { setShowForm(false); setEditing(null); }} style={{ ...btnBase, background: "rgba(110,190,175,0.06)", color: C.textSec }}>
+              <X size={14} />取消
+            </button>
+            <button onClick={handleSave} style={{ ...btnBase, background: C.accent, color: "#fff" }}>
+              <Check size={14} />保存
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* List */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {items.length === 0 && (
+          <div style={{ textAlign: "center", padding: 24, color: C.textMuted, fontSize: 13 }}>暂无内容</div>
+        )}
+        {items.map((item) => (
+          <div
+            key={item.id}
+            style={{
+              display: "flex", alignItems: "center", gap: 12, padding: "14px 16px",
+              borderRadius: 14, background: "rgba(255,255,255,0.4)",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.65)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.4)"; }}
+          >
+            <span style={{ fontSize: 18, flexShrink: 0 }}>{item.emoji}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+              <div style={{ fontSize: 11, color: C.textMuted, marginTop: 2 }}>
+                {isArticle ? `${(item as Article).tag} · ${item.date}` : `${(item as Project).tags.join(", ")} · ${item.date}`}
+              </div>
+            </div>
+            <button onClick={() => openEdit(item)} style={{ ...btnBase, padding: "6px 10px", background: "rgba(110,190,175,0.08)", color: C.accent }} title="编辑">
+              <Pencil size={13} />
+            </button>
+            <button onClick={() => handleDelete(item.id, item.title)} style={{ ...btnBase, padding: "6px 10px", background: "rgba(200,100,100,0.08)", color: "#c07070" }} title="删除">
+              <Trash2 size={13} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

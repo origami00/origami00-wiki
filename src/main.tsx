@@ -10,6 +10,7 @@ const PhotoWallPage = lazy(() => import("./pages/PhotoWallPage"));
 const ArticlesPage = lazy(() => import("./pages/ArticlesPage"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
 const SubPage = lazy(() => import("./pages/SubPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
             <Route path="projects" element={<ProjectsPage />} />
             <Route path="about" element={<SubPage />} />
             <Route path="recommendations" element={<SubPage />} />
+            <Route path="admin" element={<AdminPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

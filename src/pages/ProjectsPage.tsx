@@ -1,6 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { C, card } from "../tokens/design";
-import { projects } from "../data/projectsData";
+import { useContentManager } from "../hooks/useContentManager";
 
 const statusColors: Record<string, { bg: string; color: string }> = {
   进行中: { bg: "rgba(110,190,175,0.12)", color: "#6ebeaf" },
@@ -9,6 +9,7 @@ const statusColors: Record<string, { bg: string; color: string }> = {
 };
 
 export default function ProjectsPage() {
+  const { projects } = useContentManager();
   return (
     <section
       style={{

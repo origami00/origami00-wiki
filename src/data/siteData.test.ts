@@ -35,8 +35,8 @@ describe("siteData", () => {
   });
 
   describe("navigation", () => {
-    it("contains 5 items", () => {
-      expect(navigation).toHaveLength(5);
+    it("contains 6 items", () => {
+      expect(navigation).toHaveLength(6);
     });
     it("each item has label, icon, href", () => {
       for (const item of navigation) {

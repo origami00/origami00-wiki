@@ -11,6 +11,7 @@ const pageTitleMap: Record<string, string> = {
   "/projects": "我的项目 - origami00-wiki",
   "/about": "关于网站 - origami00-wiki",
   "/recommendations": "推荐分享 - origami00-wiki",
+  "/admin": "内容管理 - origami00-wiki",
 };
 
 export default function MainLayout() {

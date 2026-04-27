@@ -40,8 +40,8 @@ describe("design tokens", () => {
   });
 
   describe("iconMap", () => {
-    it("contains 8 mappings", () => {
-      expect(Object.keys(iconMap)).toHaveLength(8);
+    it("contains 9 mappings", () => {
+      expect(Object.keys(iconMap)).toHaveLength(9);
     });
 
     it("maps known icon names to components", () => {

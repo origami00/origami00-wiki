@@ -1,4 +1,4 @@
-import { Code2, FileText, Heart, Home, Info, Music2, Sparkles, Tv } from "lucide-react";
+import { Code2, FileText, Heart, Home, Info, Music2, Settings, Sparkles, Tv } from "lucide-react";
 import type { CardStyle, DesignTokens, IconMap } from "../types";
 
 export const C: DesignTokens = {
@@ -33,4 +33,5 @@ export const iconMap: IconMap = {
   Sparkles,
   Info,
   Heart,
+  Settings,
 };
