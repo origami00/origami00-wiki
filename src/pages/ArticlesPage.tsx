@@ -4,6 +4,12 @@ import { C, card } from "../tokens/design";
 import { useContentManager } from "../hooks/useContentManager";
 import type { Article } from "../types";
 
+const tagColors: Record<string, { bg: string; color: string }> = {
+  前端: { bg: "rgba(110,190,175,0.12)", color: "#6ebeaf" },
+  AI: { bg: "rgba(150,130,200,0.1)", color: "#8b7bb8" },
+  游戏: { bg: "rgba(100,180,160,0.1)", color: "#5cb89e" },
+};
+
 function ArticleDetail({ article, onBack }: { article: Article; onBack: () => void }) {
   return (
     <section
@@ -63,12 +69,6 @@ export default function ArticlesPage() {
   if (selected) {
     return <ArticleDetail article={selected} onBack={() => setSelected(null)} />;
   }
-
-  const tagColors: Record<string, { bg: string; color: string }> = {
-    前端: { bg: "rgba(110,190,175,0.12)", color: "#6ebeaf" },
-    AI: { bg: "rgba(150,130,200,0.1)", color: "#8b7bb8" },
-    游戏: { bg: "rgba(100,180,160,0.1)", color: "#5cb89e" },
-  };
 
   return (
     <section

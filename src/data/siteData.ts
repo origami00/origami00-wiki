@@ -75,18 +75,26 @@ export const latestContent: ContentItem[] = [
 ];
 
 export const musicList: MusicTrack[] = [
+  { title: "沉沦与遐想", artist: "C.HØPE", duration: 0, src: "/static/音乐/C.HØPE - 沉沦与遐想.flac" },
   { title: "Banger Machine", artist: "Castion", duration: 0, src: "/static/音乐/Castion - Banger Machine.mp3" },
   { title: "Arabian Adventure", artist: "Eugene Star", duration: 0, src: "/static/音乐/Eugene Star - Arabian Adventure(New Mix1).mp3" },
   { title: "先说谎的人", artist: "h3R3", duration: 0, src: "/static/音乐/h3R3 - 先说谎的人.mp3" },
   { title: "We Never", artist: "Hi Noise", duration: 0, src: "/static/音乐/Hi Noise - We Never(Radio edit).mp3" },
   { title: "The Process", artist: "LAKEY INSPIRED", duration: 0, src: "/static/音乐/LAKEY INSPIRED - The Process.mp3" },
-  { title: "恋爱频率", artist: "Sasablue", duration: 0, src: "/static/音乐/Sasablue - 恋爱频率(伴奏).mp3" },
-  { title: "一样的月光", artist: "徐佳莹", duration: 0, src: "/static/音乐/徐佳莹 - 一样的月光.mp3" },
-  { title: "it begins", artist: "牛尾憲輔", duration: 0, src: "/static/音乐/牛尾憲輔 - it begins.mp3" },
+  { title: "Maxi poi☆poi poi poi！", artist: "S9ryne", duration: 0, src: "/static/音乐/S9ryne - Maxi poi☆poi poi poi！.mp3" },
+  { title: "恋爱频率（伴奏）", artist: "Sasablue", duration: 0, src: "/static/音乐/Sasablue - 恋爱频率(伴奏).mp3" },
   { title: "鸳鸯戏", artist: "耳土", duration: 0, src: "/static/音乐/耳土 - 鸳鸯戏.mp3" },
-  { title: "小孩", artist: "蒋孜怡", duration: 0, src: "/static/音乐/蒋孜怡 - 小孩.mp3" },
   { title: "怪獣登場", artist: "高梨康治", duration: 0, src: "/static/音乐/高梨康治 - 怪獣 登場進撃2 (UT_M-48).mp3" },
-  { title: "纸飞机", artist: "飞行雪绒", duration: 0, src: "/static/音乐/鸣潮先约电台,飞行雪绒 - 纸飞机.mp3" },
+  { title: "小孩", artist: "蒋孜怡", duration: 0, src: "/static/音乐/蒋孜怡 - 小孩.mp3" },
+  { title: "Against the Tide（逆潮）", artist: "鸣潮先约电台, Forts", duration: 0, src: "/static/音乐/鸣潮先约电台,Forts - Against the Tide（逆潮）.mp3" },
+  { title: "远航星的告别", artist: "鸣潮先约电台, jixwang, Tarokiki", duration: 0, src: "/static/音乐/鸣潮先约电台,jixwang,Tarokiki - 远航星的告别.mp3" },
+  { title: "小小奇迹", artist: "鸣潮先约电台, jixwang, 飞行雪绒", duration: 0, src: "/static/音乐/鸣潮先约电台,jixwang,飞行雪绒 - 小小奇迹.mp3" },
+  { title: "L!!!!ght", artist: "鸣潮先约电台, Meredith Bull", duration: 0, src: "/static/音乐/鸣潮先约电台,Meredith Bull - L!!!!ght.mp3" },
+  { title: "纸飞机", artist: "鸣潮先约电台, 飞行雪绒", duration: 0, src: "/static/音乐/鸣潮先约电台,飞行雪绒 - 纸飞机.mp3" },
+  { title: "Unwritten in the Stars（若能触及群星）", artist: "鸣潮先约电台, 开心蛙蛙", duration: 0, src: "/static/音乐/鸣潮先约电台,开心蛙蛙 - Unwritten in the Stars（若能触及群星）.mp3" },
+  { title: "it begins", artist: "牛尾憲輔", duration: 0, src: "/static/音乐/牛尾憲輔 - it begins.mp3" },
+  { title: "若梦", artist: "未知", duration: 0, src: "/static/音乐/若梦.aac" },
+  { title: "一样的月光", artist: "徐佳莹", duration: 0, src: "/static/音乐/徐佳莹 - 一样的月光.mp3" },
 ];
 
 export const photoWallItems: PhotoWallItem[] = [

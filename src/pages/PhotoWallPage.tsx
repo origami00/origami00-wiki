@@ -14,11 +14,11 @@ export default function PhotoWallPage() {
 
   const goPrev = useCallback(() => {
     setLightboxIdx((i) => (i !== null ? (i - 1 + photos.length) % photos.length : null));
-  }, []);
+  }, [photos.length]);
 
   const goNext = useCallback(() => {
     setLightboxIdx((i) => (i !== null ? (i + 1) % photos.length : null));
-  }, []);
+  }, [photos.length]);
 
   useEffect(() => {
     if (lightboxIdx === null) return;
@@ -30,6 +30,21 @@ export default function PhotoWallPage() {
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [lightboxIdx, closeLightbox, goPrev, goNext]);
+
+  // Guard: close lightbox if index becomes out of bounds
+  useEffect(() => {
+    if (lightboxIdx !== null && lightboxIdx >= photos.length) {
+      setLightboxIdx(null);
+    }
+  }, [lightboxIdx, photos.length]);
+
+  if (photos.length === 0) {
+    return (
+      <section style={{ ...card, minHeight: 500, padding: 40, background: "rgba(255,255,255,0.45)", display: "flex", alignItems: "center", justifyContent: "center" }} aria-label="照片墙页面">
+        <p style={{ fontSize: 14, color: C.textMuted }}>暂无照片</p>
+      </section>
+    );
+  }
 
   const cover = photos[0]!;
 
@@ -93,7 +108,7 @@ export default function PhotoWallPage() {
       </div>
 
       {/* 灯箱 */}
-      {lightboxIdx !== null && (() => {
+      {lightboxIdx !== null && lightboxIdx < photos.length && (() => {
         const current = photos[lightboxIdx]!;
         return (
           <div

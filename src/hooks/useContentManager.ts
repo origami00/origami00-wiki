@@ -27,11 +27,12 @@ function saveToStorage<T>(key: string, data: T[]) {
 }
 
 function toId(title: string): string {
-  return title
+  const base = title
     .toLowerCase()
     .replace(/[^a-z0-9一-鿿]+/g, "-")
     .replace(/^-|-$/g, "")
-    || `item-${Date.now()}`;
+    || "item";
+  return `${base}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
 export function useContentManager() {

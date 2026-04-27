@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface CalendarDay {
   day: number;
@@ -15,7 +15,18 @@ interface CalendarResult {
 
 export function useCalendar(): CalendarResult {
   const [offset, setOffset] = useState(0);
+  const [, setTick] = useState(0);
   const today = new Date();
+
+  // Re-render at midnight so "today" highlight updates
+  useEffect(() => {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const msUntilMidnight = midnight.getTime() - now.getTime();
+    const timer = setTimeout(() => setTick((t) => t + 1), msUntilMidnight);
+    return () => clearTimeout(timer);
+  }, [today.toDateString()]);
+
   const viewDate = new Date(today.getFullYear(), today.getMonth() + offset, 1);
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();

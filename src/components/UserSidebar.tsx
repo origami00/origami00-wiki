@@ -28,7 +28,7 @@ export default function UserSidebar() {
         {navigation.map((item) => {
           const Icon = iconMap[item.icon] ?? Info;
           return (
-            <NavLink key={item.href} to={item.href} className={({ isActive }) => `sideNavBtn ${isActive ? "active" : ""}`} aria-label={`进入${item.label}`}>
+            <NavLink key={item.href} to={item.href} end={item.href === "/"} className={({ isActive }) => `sideNavBtn ${isActive ? "active" : ""}`} aria-label={`进入${item.label}`}>
               <Icon size={15} style={{ opacity: 0.7 }} />
               <span>{item.label}</span>
             </NavLink>

@@ -78,18 +78,21 @@ export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayer
       if (mode === "loop") {
         audio.currentTime = 0;
         audio.play().catch(() => setPlaying(false));
+      } else if (mode === "shuffle") {
+        // Always pick a random track
+        setQueuePos((pos) => {
+          if (len <= 1) return 0;
+          let r: number;
+          do { r = Math.floor(Math.random() * len); } while (r === pos);
+          return r;
+        });
       } else {
-        // Don't set playing=false here; let the new track auto-play
+        // "list" mode: play next, stop at end
         setQueuePos((pos) => {
           const next = pos + 1;
           if (next >= len) {
-            if (mode === "shuffle") {
-              if (len <= 1) return 0;
-              let r: number;
-              do { r = Math.floor(Math.random() * len); } while (r === pos);
-              return r;
-            }
-            return 0;
+            setPlaying(false);
+            return pos;
           }
           return next;
         });
@@ -110,6 +113,7 @@ export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayer
       audio.removeEventListener("loadedmetadata", onLoaded);
       audio.removeEventListener("timeupdate", onTimeUpdate);
       audio.removeEventListener("ended", onEnded);
+      audioRef.current = null;
     };
   }, [trackIdx, track.src]);
 
@@ -167,7 +171,16 @@ export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayer
   const setVolume = (v: number) => setVolumeState(Math.max(0, Math.min(100, v)));
 
   const playTrack = (pos: number) => {
-    if (pos === queuePos) return;
+    if (pos === queuePos) {
+      // Restart current track
+      const audio = audioRef.current;
+      if (audio) {
+        audio.currentTime = 0;
+        setProgress(0);
+        setPlaying(true);
+      }
+      return;
+    }
     setPlaying(false);
     setProgress(0);
     setQueuePos(pos);
