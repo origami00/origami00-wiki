@@ -87,7 +87,7 @@
 
 - **日期**：2026-04-27（Phase 3）
 - **决策**：音乐播放器使用 `<audio>` 元素播放真实 mp3 文件
-- **理由**：12 首 mp3 文件已放置在 `public/Assets/音乐/`，HTML5 Audio API 直接支持
+- **理由**：20 首 mp3 文件已放置在 `public/static/音乐/`，HTML5 Audio API 直接支持
 - **影响**：进度条拖拽、自动切歌、播放/暂停均已实现
 
 ---
@@ -125,7 +125,7 @@
 - **日期**：2026-04-27
 - **决策**：音乐播放器使用本地 mp3 文件，不对接网易云 API
 - **理由**：个人主页项目无后端服务，本地 mp3 是最简单可靠的方案
-- **影响**：在 `public/Assets/音乐/` 放置 12 个 mp3 文件
+- **影响**：在 `public/static/音乐/` 放置 20 个 mp3 文件
 
 ---
 
@@ -149,9 +149,9 @@
 ## D015 — 静态资产目录迁移至 public/
 
 - **日期**：2026-04-27
-- **决策**：将 `Assets/` 从项目根目录移动到 `public/Assets/`，通过 `/Assets/...` 路径直接访问
+- **决策**：将 `Assets/` 从项目根目录移动到 `public/static/`，通过 `/static/...` 路径直接访问（后经 D028 从 `public/Assets/` 重命名为 `public/static/`）
 - **理由**：`public/` 目录下的文件由 Vite 直接提供静态服务，适合大型媒体文件
-- **影响**：所有资产路径以 `/Assets/` 开头
+- **影响**：所有资产路径以 `/static/` 开头
 
 ---
 
@@ -166,7 +166,7 @@
 ## D017 — 音乐播放器仅使用 mp3 格式
 
 - **日期**：2026-04-27
-- **决策**：排除 `.flac` 和 `.aac` 格式，仅保留 `.mp3`（共 12 首）
+- **决策**：排除 `.flac` 和 `.aac` 格式，仅保留 `.mp3`（共 20 首）
 - **理由**：HTML5 `<audio>` 对 FLAC/AAC 的浏览器兼容性不佳
 
 ---
@@ -212,7 +212,7 @@
   - `vite.config.ts` 添加 `test` 配置
   - `src/test/setup.ts` 初始化 jest-dom matchers
   - `src/test/renderWithRouter.tsx` 路由测试辅助函数
-- **影响**：26 个测试文件，136 个测试用例，`npm run test` 全部通过
+- **影响**：26 个测试文件，138 个测试用例，`npm run test` 全部通过
 
 ---
 
@@ -296,6 +296,51 @@
   - `LatestContent` 组件从静态 import 改为 `useContentManager()` 动态读取
   - `ContentItem` 接口新增可选 `id` 字段
   - localStorage 新增 `origami00-latest` 键
+
+---
+
+## D028 — 静态资源路径迁移
+
+- **日期**：2026-04-27
+- **决策**：将 `public/Assets/` 重命名为 `public/static/`，所有资源路径从 `/Assets/...` 改为 `/static/...`
+- **备选方案**：
+  - 保持 `public/Assets/` 不变 — Windows 大小写不敏感导致本地正常，Linux 部署后 404
+  - 使用 Vite alias 重写路径 — 增加配置复杂度
+- **理由**：Vite 构建输出目录为 `dist/assets/`（小写），与 `public/Assets/`（大写）在 Linux 文件系统上产生路径冲突。重命名为 `public/static/` 彻底避免歧义
+- **影响**：所有组件和数据文件中的资源路径统一更新，nginx.conf 配置 `/static/` 缓存策略
+
+---
+
+## D029 — 推荐分享管理
+
+- **日期**：2026-04-27
+- **决策**：管理面板新增「推荐分享」Tab，通过 `useContentManager` 管理推荐链接数据
+- **备选方案**：
+  - 保持静态数据，每次修改需手动编辑代码 — 效率低
+  - 独立管理逻辑 — 与其他管理 Tab 模式不一致
+- **理由**：推荐分享页面（`/recommendations`）原使用硬编码数据，无法通过后台编辑。纳入统一管理体系后，与其他内容（文章/项目/照片/动态/音乐）管理体验一致
+- **影响**：
+  - `siteData.ts` 新增 `defaultRecommendations` 导出
+  - `useContentManager` 新增 `recommendations` 状态和 5 个 CRUD 方法
+  - `AdminPage` 新增 `RecommendationsTab` 组件
+  - `SubPage` 的 `/recommendations` 路由改用 `useContentManager` 数据
+  - localStorage 新增 `origami00-recommendations` 键
+
+---
+
+## D030 — 数据版本控制
+
+- **日期**：2026-04-27
+- **决策**：在 `useContentManager` 中引入 `DATA_VERSION` 常量和 `migrateData()` 函数，当默认数据变更时自动清除 localStorage 缓存
+- **备选方案**：
+  - 手动清除 localStorage — 用户需知道操作方法，体验差
+  - 逐字段迁移 — 实现复杂，当前规模不需要
+  - 不做迁移 — 旧数据与新代码不兼容（如 12 首歌 vs 20 首歌）
+- **理由**：默认数据变更（如音乐列表从 12 首扩展到 20 首、资源路径迁移）后，localStorage 中的旧数据会导致功能异常。版本控制机制确保用户始终看到正确的数据
+- **影响**：
+  - `useContentManager` 新增 `DATA_VERSION_KEY`、`DATA_VERSION`、`migrateData()`
+  - 每次默认数据变更时只需 bump `DATA_VERSION` 值
+  - 所有 localStorage 缓存在版本不匹配时自动清除并回退到新默认数据
 
 ---
 

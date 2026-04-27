@@ -74,7 +74,7 @@ src/
 │   ├── PhotoWallPage.tsx    # 照片墙
 │   ├── ArticlesPage.tsx     # 文章列表+详情
 │   ├── ProjectsPage.tsx     # 项目展示
-│   ├── AdminPage.tsx        # 管理面板（登录 + 文章/项目/照片/动态 CRUD）
+│   ├── AdminPage.tsx        # 管理面板（登录 + 文章/项目/照片/动态/音乐/推荐 CRUD）
 │   └── SubPage.tsx          # 通用子页面（关于/推荐）
 ├── data/
 │   ├── siteData.ts          # 站点数据
@@ -88,10 +88,10 @@ src/
 └── *.test.ts(x)             # 测试文件（与源文件同目录）
 
 public/
-└── Assets/              # 静态资产（Vite 直接提供服务）
+└── static/              # 静态资产（Vite 直接提供服务）
     ├── 头像/             # 头像图片
     ├── 照片墙资产/        # 照片墙图片
-    ├── 音乐/             # 音频文件（mp3）
+    ├── 音乐/             # 音频文件（mp3，共 20 首）
     ├── icon/             # 社交链接自定义图标
     └── 社交链接/          # 社交链接说明
 ```
@@ -207,6 +207,9 @@ public/
 - 所有表单使用内联展开方式
 - 照片管理支持缩略图预览和排序
 - 动态管理支持最新动态的增删改，数据同步到首页 LatestContent 卡片
+- 音乐管理支持增删改和排序，数据同步到 MusicPlayer 组件
+- 推荐分享管理支持增删改和排序，数据同步到 /recommendations 页面
+- 数据版本控制：`DATA_VERSION` 常量 + `migrateData()` 自动迁移旧数据
 
 ### 10.4 CatSitting (SVG 猫咪)
 - 手绘 SVG，不要替换为图片
@@ -249,3 +252,4 @@ public/
 | 2026-04-27 | v1.1 | 更新文件结构（.jsx→.tsx）、依赖列表、禁止事项，移除过时规则 |
 | 2026-04-27 | v2.0 | 更新目录结构（拆分后）、设计令牌路径、新增测试规范、更新构建脚本、更新禁止事项 |
 | 2026-04-27 | v2.1 | 新增 useContentManager hook、AdminPage、640px 断点、MusicPlayer 增强 |
+| 2026-04-27 | v2.2 | 静态资源路径迁移（public/static）、音乐管理+推荐分享管理 Tab、数据版本控制、20 首音乐 |

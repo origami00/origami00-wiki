@@ -10,12 +10,12 @@ describe("ProfileCard", () => {
 
   it("renders profile name", () => {
     render(<ProfileCard greeting="Hello" />);
-    expect(screen.getByText("小猫咪")).toBeInTheDocument();
+    expect(screen.getByText("Origami00")).toBeInTheDocument();
   });
 
   it("renders profile bio", () => {
     render(<ProfileCard greeting="Hello" />);
-    expect(screen.getByText(/全栈开发/)).toBeInTheDocument();
+    expect(screen.getByText(/绘画/)).toBeInTheDocument();
   });
 
   it("renders location", () => {

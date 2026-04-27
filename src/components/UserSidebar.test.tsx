@@ -6,7 +6,7 @@ import { renderWithRouter } from "../test/renderWithRouter";
 describe("UserSidebar", () => {
   it("renders profile name", () => {
     renderWithRouter(<UserSidebar />);
-    expect(screen.getByText("小猫咪")).toBeInTheDocument();
+    expect(screen.getByText("Origami00")).toBeInTheDocument();
   });
 
   it("renders all navigation items", () => {

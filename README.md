@@ -76,7 +76,7 @@ src/
 │   ├── PhotoWallPage.tsx    # 照片墙
 │   ├── ArticlesPage.tsx     # 文章列表+详情
 │   ├── ProjectsPage.tsx     # 项目展示
-│   ├── AdminPage.tsx        # 管理面板（登录 + 文章/项目/照片 CRUD）
+│   ├── AdminPage.tsx        # 管理面板（登录 + 文章/项目/照片/动态/推荐 CRUD）
 │   └── SubPage.tsx          # 通用子页面（关于/推荐）
 ├── data/
 │   ├── siteData.ts          # 站点数据
@@ -90,10 +90,10 @@ src/
 └── *.test.ts(x)             # 测试文件（与源文件同目录）
 
 public/
-└── Assets/              # 静态资产（Vite 直接提供服务）
+└── static/              # 静态资产（Vite 直接提供服务）
     ├── 头像/             # 头像图片
     ├── 照片墙资产/        # 照片墙图片
-    ├── 音乐/             # 音频文件（mp3）
+    ├── 音乐/             # 音频文件（mp3，共 20 首）
     ├── icon/             # 社交链接自定义图标
     └── 社交链接/          # 社交链接说明
 ```
@@ -319,11 +319,13 @@ import { C, card, iconMap } from "../tokens/design";
 
 `src/pages/AdminPage.tsx` 是内容管理后台：
 - **登录系统**：localStorage 存储登录状态，支持邮箱+密码登录
-- **Tab 切换**：文章管理 / 项目管理 / 照片管理 / 动态管理
+- **Tab 切换**：文章管理 / 项目管理 / 照片管理 / 动态管理 / 音乐管理 / 推荐分享管理
 - **CRUD 操作**：新增、编辑、删除条目，表单内联展开
 - **重置功能**：清空 localStorage 恢复默认数据
 - **照片管理**：缩略图预览、标题修改、上下移动排序
 - **动态管理**：最新动态的增删改，数据同步到首页 LatestContent 卡片
+- **音乐管理**：音乐列表的增删改和排序，数据同步到 MusicPlayer 组件
+- **推荐分享管理**：推荐链接的增删改和排序，数据同步到 /recommendations 页面
 
 ---
 
@@ -377,7 +379,7 @@ import { C, card, iconMap } from "../tokens/design";
 | `elapsedStr` | string | 已播放时间 `"01:23"` |
 | `totalStr` | string | 总时长 `"03:18"` |
 
-使用 `<audio>` 元素播放真实 mp3，监听 `timeupdate` 和 `ended` 事件。12 首 mp3 文件在 `public/Assets/音乐/`。
+使用 `<audio>` 元素播放真实 mp3，监听 `timeupdate` 和 `ended` 事件。20 首 mp3 文件在 `public/static/音乐/`。
 
 ### useContentManager()
 
@@ -403,14 +405,26 @@ import { C, card, iconMap } from "../tokens/design";
 | `updateLatest` | function | 更新最新动态 |
 | `deleteLatest` | function | 删除最新动态 |
 | `moveLatest` | function | 移动最新动态位置 |
+| `addMusic` | function | 新增音乐 |
+| `updateMusic` | function | 更新音乐 |
+| `deleteMusic` | function | 删除音乐 |
+| `moveMusic` | function | 移动音乐位置 |
+| `addRecommendation` | function | 新增推荐链接 |
+| `updateRecommendation` | function | 更新推荐链接 |
+| `deleteRecommendation` | function | 删除推荐链接 |
+| `moveRecommendation` | function | 移动推荐链接位置 |
 | `resetArticles` | function | 重置文章为默认数据 |
 | `resetProjects` | function | 重置项目为默认数据 |
 | `resetPhotos` | function | 重置照片为默认数据 |
 | `resetLatest` | function | 重置最新动态为默认数据 |
+| `resetMusic` | function | 重置音乐为默认数据 |
+| `resetRecommendations` | function | 重置推荐链接为默认数据 |
 
-localStorage key：`origami00-articles` / `origami00-projects` / `origami00-photos` / `origami00-latest`
+localStorage key：`origami00-articles` / `origami00-projects` / `origami00-photos` / `origami00-latest` / `origami00-music` / `origami00-recommendations`
 
 合并策略：localStorage 中有数据时使用 localStorage，为空时使用静态默认数据。AdminPage 和展示页面共用此 hook，数据自动同步。
+
+数据版本控制：`DATA_VERSION` 常量 + `migrateData()` 函数，当默认数据变更时自动清除 localStorage 缓存并回退到新默认数据，避免旧数据与新代码不兼容。
 
 ---
 
@@ -495,7 +509,7 @@ localStorage key：`origami00-articles` / `origami00-projects` / `origami00-phot
 
 ### siteData.ts
 
-导出对象/数组：`profile`、`socialLinks`、`navigation`、`latestContent`、`musicList`、`photoWallItems`、`subPageContent`。
+导出对象/数组：`profile`、`socialLinks`、`navigation`、`latestContent`、`musicList`、`photoWallItems`、`subPageContent`、`defaultRecommendations`。
 
 ### articlesData.ts
 
@@ -628,7 +642,7 @@ hover 效果通过 `useState` 追踪状态，动态切换 style 值。
 测试文件与源文件同目录，命名为 `*.test.ts(x)`。
 
 ```
-26 个测试文件，136 个测试用例
+26 个测试文件，138 个测试用例
 ├── tokens/design.test.ts        — 8 个用例
 ├── data/siteData.test.ts        — 21 个用例
 ├── data/articlesData.test.ts    — 4 个用例
@@ -686,7 +700,7 @@ npm run test:coverage # 覆盖率报告
 
 ### 添加真实音频
 
-1. 将 mp3 文件放入 `public/Assets/音乐/`
+1. 将 mp3 文件放入 `public/static/音乐/`
 2. 在 `siteData.ts` 的 `musicList` 中添加曲目信息
 
 ---
@@ -701,7 +715,7 @@ npm run test:coverage # 覆盖率报告
 | 组件架构 | 21 个独立模块 | 单文件 ≤160 行，便于维护 |
 | 图标库 | Lucide React | 线性风格统一，体积小 |
 | 数据管理 | 集中 `data/` 目录 + useContentManager | 静态数据 + localStorage 双层管理 |
-| 音乐播放 | 真实 `<audio>` + mp3 | 12 首本地 mp3，进度条拖拽，音量/模式控制 |
+| 音乐播放 | 真实 `<audio>` + mp3 | 20 首本地 mp3，进度条拖拽，音量/模式控制 |
 | 代码拆分 | React.lazy + Suspense | 首屏只加载 MainLayout + HomePage |
 | 测试框架 | Vitest + RTL | 与 Vite 原生集成，测试用户行为 |
 | 类型系统 | TypeScript strict | 拆分过程中捕获错误 |

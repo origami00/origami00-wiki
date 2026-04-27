@@ -10,6 +10,22 @@ const PHOTOS_KEY = "origami00-photos";
 const LATEST_KEY = "origami00-latest";
 const MUSIC_KEY = "origami00-music";
 const RECOMMENDATIONS_KEY = "origami00-recommendations";
+const DATA_VERSION_KEY = "origami00-data-version";
+const DATA_VERSION = 2; // Bump this when default data changes
+
+// Migrate stale localStorage data (e.g., old /Assets/ paths, outdated music list)
+function migrateData() {
+  try {
+    const stored = localStorage.getItem(DATA_VERSION_KEY);
+    if (stored !== String(DATA_VERSION)) {
+      // Clear all cached data so it falls back to new defaults
+      [ARTICLES_KEY, PROJECTS_KEY, PHOTOS_KEY, LATEST_KEY, MUSIC_KEY, RECOMMENDATIONS_KEY].forEach((k) => localStorage.removeItem(k));
+      localStorage.setItem(DATA_VERSION_KEY, String(DATA_VERSION));
+    }
+  } catch { /* ignore */ }
+}
+
+migrateData();
 
 function loadFromStorage<T>(key: string, fallback: T[]): T[] {
   try {

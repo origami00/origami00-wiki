@@ -95,19 +95,19 @@ export const latestContent: ContentItem[] = [
 
 ```ts
 export const musicList: MusicTrack[] = [
-  { title: "Banger Machine", artist: "Castion", duration: 0, src: "/Assets/音乐/Castion - Banger Machine.mp3" },
-  { title: "Arabian Adventure", artist: "Eugene Star", duration: 0, src: "/Assets/音乐/Eugene Star - Arabian Adventure(New Mix1).mp3" },
-  // ... 共 12 首
+  { title: "Banger Machine", artist: "Castion", duration: 0, src: "/static/音乐/Castion - Banger Machine.mp3" },
+  { title: "Arabian Adventure", artist: "Eugene Star", duration: 0, src: "/static/音乐/Eugene Star - Arabian Adventure(New Mix1).mp3" },
+  // ... 共 20 首
 ];
 ```
 
-音乐文件放置在 `public/Assets/音乐/` 目录下（mp3 格式），共 12 首。
+音乐文件放置在 `public/static/音乐/` 目录下（mp3 格式），共 20 首。
 
 ### 6. 照片墙
 
 ```ts
 export const photoWallItems: PhotoWallItem[] = [
-  { title: "街头随拍", src: "/Assets/照片墙资产/photo1.jpg" },
+  { title: "街头随拍", src: "/static/照片墙资产/photo1.jpg" },
   // 替换 src 为真实图片地址即可
 ];
 ```
@@ -186,6 +186,8 @@ export const projects: Project[] = [
 - **项目管理**：新增、编辑、删除项目，支持状态标签（进行中/已完成/暂停）
 - **照片管理**：新增、编辑、删除照片，支持上下移动排序
 - **动态管理**：新增、编辑、删除最新动态，支持标题/标签/日期/Emoji/链接
+- **音乐管理**：新增、编辑、删除音乐，支持上下移动排序
+- **推荐分享管理**：新增、编辑、删除推荐链接，支持上下移动排序
 - **重置功能**：清空 localStorage 恢复到代码中的默认数据
 
 ### 数据存储
@@ -195,7 +197,10 @@ export const projects: Project[] = [
 - `origami00-projects` — 项目数据
 - `origami00-photos` — 照片数据
 - `origami00-latest` — 最新动态数据
+- `origami00-music` — 音乐数据
+- `origami00-recommendations` — 推荐链接数据
 - `origami00-admin-auth` — 登录状态
+- `origami00-data-version` — 数据版本号（自动迁移用）
 
 刷新页面后数据仍然保留。使用「重置」按钮可恢复默认。
 
@@ -238,10 +243,10 @@ export const iconMap: IconMap = {
 
 ```tsx
 // 修改头像图片路径
-const imgSrc = "/Assets/头像/youhuxiantiao.jpg";
+const imgSrc = "/static/头像/youhuxiantiao.jpg";
 ```
 
-将你的头像图片放入 `public/Assets/头像/` 目录，修改 `imgSrc` 路径即可。
+将你的头像图片放入 `public/static/头像/` 目录，修改 `imgSrc` 路径即可。
 
 ### 页面标题：`src/layouts/MainLayout.tsx`
 

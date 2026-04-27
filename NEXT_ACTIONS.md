@@ -11,18 +11,23 @@
 - [x] **配置 ESLint + Prettier** — `eslint.config.js` + `.prettierrc`，`npm run lint` 通过
 - [x] **更新 index.html** — 脚本引用从 `main.jsx` 改为 `main.tsx`
 - [x] **集成真实资产** — 迁移 Assets/ 到 public/，Avatar 使用真实头像，SocialLinks 使用自定义图标+真实 URL，PhotoWall 使用真实照片
-- [x] **真实音频播放器** — useAudioPlayer 重写为 `<audio>` 元素，12 首 mp3 文件
+- [x] **真实音频播放器** — useAudioPlayer 重写为 `<audio>` 元素，20 首 mp3 文件
 - [x] **移动端响应式增强** — 新增 ≤480px 断点，覆盖 6 个组件的移动端适配
 - [x] **组件拆分 + 路由重构** — App.tsx 893 行拆分为 21 个模块，嵌套路由 + MainLayout + Outlet
 - [x] **文章/项目展示页** — ArticlesPage（列表+详情）、ProjectsPage（卡片+状态标签）
 - [x] **页面切换过渡动画** — PageTransition 组件，淡入 0.3s / 淡出 0.2s
 - [x] **组件懒加载** — React.lazy + Suspense，所有页面按需加载，构建产物拆分为 11 个 chunk
-- [x] **单元测试** — Vitest + React Testing Library，26 个测试文件，136 个测试用例
+- [x] **单元测试** — Vitest + React Testing Library，26 个测试文件，138 个测试用例
 - [x] **内容管理面板** — AdminPage 管理面板，支持文章/项目/照片的 CRUD 操作
 - [x] **管理面板认证** — localStorage flag + 硬编码凭据登录系统
 - [x] **照片墙管理** — 管理面板新增照片管理 Tab，支持增删改和排序
 - [x] **移动端适配** — 新增 ≤640px 断点，管理面板/文章/项目/照片墙移动端优化
 - [x] **最新动态管理** — 管理面板新增动态管理 Tab，支持增删改，数据同步到首页
+- [x] **音乐管理** — 管理面板新增音乐管理 Tab，支持增删改和排序，数据同步到 MusicPlayer
+- [x] **推荐分享管理** — 管理面板新增推荐分享管理 Tab，支持增删改和排序，数据同步到 /recommendations 页面
+- [x] **数据版本控制** — useContentManager 新增 DATA_VERSION + migrateData()，自动迁移旧数据
+- [x] **静态资源路径迁移** — `public/Assets/` → `public/static/`，解决 Linux 大小写路径冲突
+- [x] **部署配置** — Nginx + 宝塔面板部署方案（deploy/nginx.conf + deploy/deploy.sh）
 
 ---
 
@@ -102,5 +107,5 @@ Phase 5: 测试
 Phase 6: 体验增强（可选）
 - [ ] 暗色模式
 - [ ] Favicon + SEO
-- [ ] 部署配置
+- [x] 部署配置
 ```

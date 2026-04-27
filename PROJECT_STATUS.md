@@ -28,7 +28,7 @@
 | ClockCard 实时时钟 | ✅ 完成 | UTC+8 强制时区，冒号闪烁动画 |
 | CalendarCard 日历 | ✅ 完成 | 月份切换、今日高亮 |
 | SocialLinks 社交链接 | ✅ 完成 | GitHub / Bilibili / 抖音，自定义 PNG 图标 + 真实 URL |
-| MusicPlayer 音乐播放器 | ✅ 完成 | 真实音频播放（`<audio>`），12 首 mp3，进度条拖拽，音量/模式控制，播放列表 |
+| MusicPlayer 音乐播放器 | ✅ 完成 | 真实音频播放（`<audio>`），20 首 mp3，进度条拖拽，音量/模式控制，播放列表 |
 | LatestContent 内容流 | ✅ 完成 | 4 条最新内容卡片，含标签和日期，支持管理面板动态修改 |
 | CatCard 猫咪插画 | ✅ 完成 | 手绘 SVG 猫咪，链接到照片墙 |
 | UserSidebar 侧边导航 | ✅ 完成 | 桌面端垂直导航，移动端水平滚动 |
@@ -39,11 +39,15 @@
 | 页面切换过渡动画 | ✅ 完成 | PageTransition 组件，淡入/淡出 CSS 动画 |
 | 组件懒加载 | ✅ 完成 | React.lazy + Suspense，所有页面按需加载 |
 | 动画系统 | ✅ 完成 | 卡片入场、页面切换、悬停效果 |
-| 单元测试 | ✅ 完成 | Vitest + React Testing Library，26 个测试文件，136 个测试用例 |
+| 单元测试 | ✅ 完成 | Vitest + React Testing Library，26 个测试文件，138 个测试用例 |
 | 内容管理面板 | ✅ 完成 | AdminPage 管理面板，支持文章/项目/照片的 CRUD 操作 |
 | 管理面板认证 | ✅ 完成 | localStorage flag + 硬编码凭据登录系统 |
 | 照片墙管理 | ✅ 完成 | 管理面板新增照片管理 Tab，支持增删改和排序 |
 | 最新动态管理 | ✅ 完成 | 管理面板新增动态管理 Tab，支持增删改，数据同步到首页 |
+| 音乐管理 | ✅ 完成 | 管理面板新增音乐管理 Tab，支持增删改和排序，数据同步到 MusicPlayer |
+| 推荐分享管理 | ✅ 完成 | 管理面板新增推荐分享管理 Tab，支持增删改和排序，数据同步到 /recommendations 页面 |
+| 数据版本控制 | ✅ 完成 | useContentManager 新增 DATA_VERSION + migrateData()，自动迁移旧 localStorage 数据 |
+| 静态资源路径迁移 | ✅ 完成 | `public/Assets/` → `public/static/`，解决 Linux 大小写路径冲突 |
 | 移动端适配 | ✅ 完成 | 新增 ≤640px 断点，管理面板/文章/项目/照片墙移动端优化 |
 | 生产构建 | ✅ 完成 | `dist/` 已生成（11 个 chunk，最大 174KB） |
 | 项目文档 | ✅ 完成 | PROJECT.md 完整开发手册 |
@@ -54,11 +58,11 @@
 
 | 模块 | 状态 | 优先级 | 说明 |
 |------|------|--------|------|
-| 测试覆盖率提升 | 🔲 Phase 5.1 | P2 | 当前 136 测试用例，目标覆盖率 ≥90% |
+| 测试覆盖率提升 | 🔲 Phase 5.1 | P2 | 当前 138 测试用例，目标覆盖率 ≥90% |
 | 暗色模式 | ⏸️ 待定 | P3 | 未实现 |
 | Favicon | ⏸️ 待定 | P3 | 未设置 |
 | SEO 优化 | ⏸️ 待定 | P3 | 缺少 Open Graph、结构化数据 |
-| 部署配置 | ⏸️ 待定 | P3 | 无 Vercel/Netlify/GitHub Pages 配置 |
+| 部署配置 | ✅ 完成 | P3 | Nginx + 宝塔面板部署方案（deploy/nginx.conf + deploy/deploy.sh） |
 
 ---
 
@@ -71,7 +75,7 @@
 | 最大文件 | MainLayout.tsx ~160 行（含 CSS） | ✅ 合理 |
 | 类型安全 | TypeScript strict 模式，`src/types/index.ts` 定义全部接口 | ✅ |
 | 代码规范 | ESLint + Prettier 已配置，lint 通过 | ✅ |
-| 测试覆盖 | 136 测试用例，26 个测试文件 | ✅ |
+| 测试覆盖 | 138 测试用例，26 个测试文件 | ✅ |
 | 文档完整度 | PROJECT.md + PROJECT_STATUS.md + DECISIONS.md + NEXT_ACTIONS.md | ✅ 优秀 |
 | 构建产物 | 可用，已生成 dist/（11 个 chunk，最大 174KB JS） | ✅ |
 | 代码拆分 | React.lazy 懒加载，每个页面独立 chunk | ✅ |
@@ -100,6 +104,7 @@
 | M2 — 组件拆分 | 拆分 App.tsx、路由重构、样式统一 | ✅ 完成 |
 | M3 — 功能开发 | 真实音频、文章/项目页 | ✅ 完成 |
 | M4 — 体验优化 | 页面过渡动画、懒加载 | ✅ 完成 |
-| M5 — 测试 | 单元测试 136 用例 | ✅ 完成 |
+| M5 — 测试 | 单元测试 138 用例 | ✅ 完成 |
 | M6 — 管理面板 | AdminPage + useContentManager + 认证 | ✅ 完成 |
 | M7 — 移动端适配 | 640px 断点 + 管理面板/文章/项目/照片优化 | ✅ 完成 |
+| M8 — 管理模块增强 | 音乐管理 + 推荐分享管理 + 数据版本控制 + 静态路径迁移 | ✅ 完成 |
