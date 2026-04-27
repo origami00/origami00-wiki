@@ -6,7 +6,9 @@
       "Bash(node -e \"const l = require\\('lucide-react'\\); console.log\\(Object.keys\\(l\\).filter\\(k => k === 'Code' || k === 'Code2' || k === 'Globe' || k === 'ExternalLink' || k === 'Link' || k === 'Sparkles' || k === 'Tv' || k === 'Music2'\\).join\\(', '\\)\\)\")",
       "Bash(npx vite *)",
       "Bash(npx playwright *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vitest *)"
     ]
   }
 }
