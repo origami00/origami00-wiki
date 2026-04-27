@@ -17,6 +17,7 @@ export default function ProjectsPage() {
         background: "rgba(255,255,255,0.45)",
         display: "flex", flexDirection: "column", gap: 16,
       }}
+      className="projectsPage"
       aria-label="项目列表"
     >
       <div>
@@ -29,6 +30,7 @@ export default function ProjectsPage() {
           return (
             <div
               key={project.id}
+              className="projectCard"
               style={{
                 padding: "20px 20px", borderRadius: 16,
                 background: "rgba(255,255,255,0.45)",

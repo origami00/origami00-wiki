@@ -61,7 +61,7 @@ function LoginForm({ onLogin }: { onLogin: (email: string, password: string) => 
   };
 
   return (
-    <section style={{ ...card, padding: "40px 32px", background: "rgba(255,255,255,0.45)", display: "flex", flexDirection: "column", alignItems: "center", gap: 20, maxWidth: 380, margin: "60px auto", width: "100%" }} aria-label="管理员登录">
+    <section className="adminLogin" style={{ ...card, padding: "40px 32px", background: "rgba(255,255,255,0.45)", display: "flex", flexDirection: "column", alignItems: "center", gap: 20, maxWidth: 380, margin: "60px auto", width: "100%" }} aria-label="管理员登录">
       <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(110,190,175,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Lock size={22} color={C.accent} />
       </div>
@@ -144,9 +144,9 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
   return (
     <>
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+      <div className="adminActions" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: C.text }}>内容管理</h2>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           <button onClick={openNew} style={{ ...btnBase, background: C.accent, color: "#fff" }}>
             <Plus size={14} />{isArticle ? "新增文章" : "新增项目"}
           </button>
@@ -161,13 +161,13 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
 
       {/* Form */}
       {showForm && (
-        <div style={{ background: "rgba(255,255,255,0.5)", borderRadius: 16, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 12, border: "1px solid rgba(110,190,175,0.12)" }}>
+        <div className="adminForm" style={{ background: "rgba(255,255,255,0.5)", borderRadius: 16, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 12, border: "1px solid rgba(110,190,175,0.12)" }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 4 }}>{editing ? "编辑" : "新增"}{isArticle ? "文章" : "项目"}</div>
           <div>
             <label style={labelStyle}>标题 *</label>
             <input style={inputStyle} value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="输入标题" />
           </div>
-          <div style={{ display: "flex", gap: 10 }}>
+          <div className="adminFormRow" style={{ display: "flex", gap: 10 }}>
             <div style={{ flex: "0 0 80px" }}>
               <label style={labelStyle}>Emoji</label>
               <input style={inputStyle} value={form.emoji} onChange={(e) => set("emoji", e.target.value)} placeholder="emoji" />
@@ -187,7 +187,7 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
           {!isArticle && (
             <>
               <div><label style={labelStyle}>描述</label><textarea style={{ ...inputStyle, minHeight: 80, resize: "vertical", lineHeight: 1.6 }} value={(form as ProjectForm).description} onChange={(e) => set("description", e.target.value)} placeholder="项目简介" /></div>
-              <div style={{ display: "flex", gap: 10 }}>
+              <div className="adminFormRow" style={{ display: "flex", gap: 10 }}>
                 <div style={{ flex: 1 }}><label style={labelStyle}>标签（逗号分隔）</label><input style={inputStyle} value={(form as ProjectForm).tags.join(", ")} onChange={(e) => set("tags", e.target.value.split(",").map((s) => s.trim()).filter(Boolean))} placeholder="React, TypeScript" /></div>
                 <div style={{ flex: "0 0 120px" }}>
                   <label style={labelStyle}>状态</label>
@@ -199,7 +199,7 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
             </>
           )}
           <div><label style={labelStyle}>链接（可选）</label><input style={inputStyle} value={form.url ?? ""} onChange={(e) => set("url", e.target.value)} placeholder="https://..." /></div>
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
+          <div className="adminFormActions" style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
             <button onClick={() => { setShowForm(false); setEditing(null); }} style={{ ...btnBase, background: "rgba(110,190,175,0.06)", color: C.textSec }}><X size={14} />取消</button>
             <button onClick={handleSave} style={{ ...btnBase, background: C.accent, color: "#fff" }}><Check size={14} />保存</button>
           </div>
@@ -207,10 +207,10 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
       )}
 
       {/* List */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="adminList" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {items.length === 0 && <div style={{ textAlign: "center", padding: 24, color: C.textMuted, fontSize: 13 }}>暂无内容</div>}
         {items.map((item) => (
-          <div key={item.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 14, background: "rgba(255,255,255,0.4)", transition: "all 0.2s" }}
+          <div key={item.id} className="adminItem" style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 14, background: "rgba(255,255,255,0.4)", transition: "all 0.2s" }}
             onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.65)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.4)"; }}>
             <span style={{ fontSize: 18, flexShrink: 0 }}>{item.emoji}</span>
@@ -270,9 +270,9 @@ function PhotosTab({ cm, onLogout }: { cm: ReturnType<typeof useContentManager>;
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+      <div className="adminActions" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
         <h2 style={{ fontSize: 22, fontWeight: 600, color: C.text }}>内容管理</h2>
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           <button onClick={openNew} style={{ ...btnBase, background: C.accent, color: "#fff" }}><Plus size={14} />新增照片</button>
           <button onClick={handleReset} style={{ ...btnBase, background: "rgba(110,190,175,0.08)", color: C.textSec }}><RotateCcw size={13} />重置</button>
           <button onClick={onLogout} style={{ ...btnBase, background: "rgba(200,100,100,0.08)", color: "#c07070" }} title="退出登录"><LogOut size={13} />退出</button>
@@ -281,7 +281,7 @@ function PhotosTab({ cm, onLogout }: { cm: ReturnType<typeof useContentManager>;
 
       {/* Form */}
       {showForm && (
-        <div style={{ background: "rgba(255,255,255,0.5)", borderRadius: 16, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 12, border: "1px solid rgba(110,190,175,0.12)" }}>
+        <div className="adminForm" style={{ background: "rgba(255,255,255,0.5)", borderRadius: 16, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 12, border: "1px solid rgba(110,190,175,0.12)" }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 4 }}>{editing !== null ? "编辑" : "新增"}照片</div>
           <div>
             <label style={labelStyle}>标题 *</label>
@@ -297,7 +297,7 @@ function PhotosTab({ cm, onLogout }: { cm: ReturnType<typeof useContentManager>;
               <img src={form.src} alt="预览" style={{ width: 120, height: 90, objectFit: "cover", borderRadius: 8, border: "1px solid rgba(110,190,175,0.15)" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
             </div>
           )}
-          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
+          <div className="adminFormActions" style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
             <button onClick={() => { setShowForm(false); setEditing(null); }} style={{ ...btnBase, background: "rgba(110,190,175,0.06)", color: C.textSec }}><X size={14} />取消</button>
             <button onClick={handleSave} style={{ ...btnBase, background: C.accent, color: "#fff" }}><Check size={14} />保存</button>
           </div>
@@ -305,18 +305,18 @@ function PhotosTab({ cm, onLogout }: { cm: ReturnType<typeof useContentManager>;
       )}
 
       {/* List */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="adminList" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {cm.photos.length === 0 && <div style={{ textAlign: "center", padding: 24, color: C.textMuted, fontSize: 13 }}>暂无照片</div>}
         {cm.photos.map((item, i) => (
-          <div key={`${item.src}-${i}`} style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 14, background: "rgba(255,255,255,0.4)", transition: "all 0.2s" }}
+          <div key={`${item.src}-${i}`} className="adminPhotoItem" style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 14, background: "rgba(255,255,255,0.4)", transition: "all 0.2s" }}
             onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.65)"; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.4)"; }}>
-            <img src={item.src} alt={item.title} style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
+            <img src={item.src} alt={item.title} className="adminPhotoThumb" style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 8, flexShrink: 0 }} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 500, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-              <div style={{ fontSize: 11, color: C.textMuted, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.src}</div>
+              <div className="adminPhotoPath" style={{ fontSize: 11, color: C.textMuted, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.src}</div>
             </div>
-            <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+            <div className="adminPhotoMove" style={{ display: "flex", gap: 2, flexShrink: 0 }}>
               <button onClick={() => cm.movePhoto(i, i - 1)} disabled={i === 0} style={{ ...btnBase, padding: "5px 7px", background: "rgba(110,190,175,0.06)", color: C.textMuted, opacity: i === 0 ? 0.3 : 1 }} title="上移"><ChevronUp size={13} /></button>
               <button onClick={() => cm.movePhoto(i, i + 1)} disabled={i === cm.photos.length - 1} style={{ ...btnBase, padding: "5px 7px", background: "rgba(110,190,175,0.06)", color: C.textMuted, opacity: i === cm.photos.length - 1 ? 0.3 : 1 }} title="下移"><ChevronDown size={13} /></button>
             </div>
@@ -342,9 +342,9 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const [tab, setTab] = useState<Tab>("articles");
 
   return (
-    <section style={{ ...card, padding: "28px 24px", background: "rgba(255,255,255,0.45)", display: "flex", flexDirection: "column", gap: 18 }} aria-label="内容管理">
+    <section className="adminPanel" style={{ ...card, padding: "28px 24px", background: "rgba(255,255,255,0.45)", display: "flex", flexDirection: "column", gap: 18 }} aria-label="内容管理">
       {/* Tabs */}
-      <div style={{ display: "flex", gap: 4, background: "rgba(110,190,175,0.06)", borderRadius: 12, padding: 3, alignSelf: "flex-start" }}>
+      <div className="adminTabs" style={{ display: "flex", gap: 4, background: "rgba(110,190,175,0.06)", borderRadius: 12, padding: 3, alignSelf: "flex-start" }}>
         {TAB_CONFIG.map(([key, label, Icon]) => (
           <button
             key={key}

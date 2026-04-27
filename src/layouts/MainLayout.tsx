@@ -252,34 +252,82 @@ export default function MainLayout() {
           .polaroidCard img { height: 150px; }
         }
 
+        @media (max-width: 640px) {
+          /* Admin panel */
+          .adminPanel, .adminLogin { padding: 18px 14px !important; }
+          .adminLogin { margin: 20px auto !important; padding: 28px 20px !important; }
+          .adminTabs { overflow-x: auto !important; align-self: stretch !important; }
+          .adminTabs button { white-space: nowrap; min-width: fit-content; padding: 7px 12px !important; font-size: 12px !important; }
+          .adminActions { flex-direction: column !important; align-items: stretch !important; }
+          .adminActions > div { justify-content: stretch !important; }
+          .adminActions > div button { flex: 1; justify-content: center; }
+          .adminForm { padding: 14px 12px !important; }
+          .adminFormRow { flex-direction: column !important; }
+          .adminFormRow > div { flex: 1 1 auto !important; }
+          .adminFormActions { flex-direction: column !important; }
+          .adminFormActions button { width: 100%; justify-content: center; }
+          .adminItem { padding: 10px 12px !important; gap: 8px !important; }
+          .adminPhotoItem { padding: 8px 10px !important; gap: 8px !important; flex-wrap: wrap !important; }
+          .adminPhotoThumb { width: 36px !important; height: 36px !important; }
+          .adminPhotoPath { display: none !important; }
+          .adminPhotoMove { display: none !important; }
+
+          /* Articles page */
+          .articlesPage, .articleDetail { padding: 18px 14px !important; }
+          .articleItem { padding: 12px 14px !important; gap: 10px !important; }
+          .articleItem > div:first-child { width: 36px !important; height: 36px !important; font-size: 15px !important; }
+
+          /* Projects page */
+          .projectsPage { padding: 18px 14px !important; }
+          .projectCard { padding: 14px 14px !important; }
+          .projectCard > div:first-child > div:first-child { width: 36px !important; height: 36px !important; font-size: 15px !important; }
+
+          /* Photo wall */
+          .polaroidGrid { gap: 12px !important; padding: 12px 4px !important; }
+          .polaroidCard { width: 140px !important; }
+          .polaroidCard img { height: 120px !important; }
+          .photoCover { max-height: 240px !important; border-radius: 12px !important; }
+
+          /* Lightbox */
+          .lightboxNav { width: 36px !important; height: 36px !important; font-size: 22px !important; }
+          .lightboxNavPrev { left: 8px !important; }
+          .lightboxNavNext { right: 8px !important; }
+          .lightboxOverlay img { max-width: 95vw !important; max-height: 70vh !important; }
+          .lightboxCaption { font-size: 12px !important; margin-top: 10px !important; }
+
+          /* Music player */
+          .musicPlayer { padding: 14px !important; }
+        }
+
         @media (max-width: 520px) {
           .layoutGrid { gap: 10px; }
           .masonryColumns { column-gap: 10px; }
           .masonryColumns > * { margin-bottom: 10px; }
-          .polaroidGrid { gap: 14px; padding: 14px 6px; }
-          .polaroidCard { width: 140px; }
-          .polaroidCard img { height: 130px; }
         }
 
         @media (max-width: 480px) {
-          .appRoot { padding: 14px 10px !important; }
-          .profileCard { padding: 20px 16px !important; }
-          .profileCard .profileInfo { flex-direction: column; align-items: flex-start; gap: 14px; }
-          .profileCard .avatar { width: 56px !important; height: 56px !important; min-width: 56px !important; }
-          .clockCard { padding: 20px 14px !important; }
-          .clockCard .clockTime { font-size: 32px !important; letter-spacing: 2px !important; }
-          .clockCard .clockSeconds { font-size: 13px !important; }
-          .socialLinks { flex-wrap: wrap !important; gap: 10px !important; padding: 12px 14px !important; }
-          .socialLinks a { width: 42px !important; height: 42px !important; border-radius: 12px !important; }
-          .calendarCard { padding: 14px 12px !important; }
-          .calendarCard .dayCell { width: 26px !important; height: 26px !important; font-size: 11.5px !important; }
-          .calendarCard .navBtn { width: 24px !important; height: 24px !important; }
-          .musicPlayer { padding: 16px !important; }
-          .musicPlayer .disc { width: 40px !important; height: 40px !important; }
-          .musicPlayer .ctrlBtn { width: 30px !important; height: 30px !important; }
-          .musicPlayer .ctrlBtnMain { width: 36px !important; height: 36px !important; }
-          .sideNavBtn { font-size: 12px !important; padding: 6px 9px !important; }
-          .sideNavBtn svg { width: 14px !important; height: 14px !important; }
+          .appRoot { padding: 10px 8px !important; }
+          .profileCard { padding: 18px 14px !important; }
+          .profileCard .profileInfo { flex-direction: column; align-items: flex-start; gap: 12px; }
+          .profileCard .avatar { width: 52px !important; height: 52px !important; min-width: 52px !important; }
+          .clockCard { padding: 18px 12px !important; }
+          .clockCard .clockTime { font-size: 28px !important; letter-spacing: 2px !important; }
+          .clockCard .clockSeconds { font-size: 12px !important; }
+          .socialLinks { flex-wrap: wrap !important; gap: 8px !important; padding: 10px 12px !important; }
+          .socialLinks a { width: 40px !important; height: 40px !important; border-radius: 10px !important; }
+          .calendarCard { padding: 12px 10px !important; }
+          .calendarCard .dayCell { width: 24px !important; height: 24px !important; font-size: 11px !important; }
+          .calendarCard .navBtn { width: 22px !important; height: 22px !important; }
+          .musicPlayer { padding: 12px !important; }
+          .musicPlayer .disc { width: 36px !important; height: 36px !important; }
+          .musicPlayer .ctrlBtn { width: 28px !important; height: 28px !important; }
+          .musicPlayer .ctrlBtnMain { width: 34px !important; height: 34px !important; }
+          .sideNavBtn { font-size: 11.5px !important; padding: 5px 8px !important; }
+          .sideNavBtn svg { width: 13px !important; height: 13px !important; }
+          .polaroidCard { width: 120px !important; }
+          .polaroidCard img { height: 100px !important; }
+          .polaroidCard figcaption { font-size: 11px !important; padding: 8px 2px 10px !important; }
+          .adminPanel, .adminLogin, .articlesPage, .articleDetail, .projectsPage { padding: 14px 10px !important; }
         }
       `}</style>
 

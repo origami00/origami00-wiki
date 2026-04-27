@@ -27,7 +27,7 @@
 - **全局重置和布局**使用 `index.css`
 - **禁止**引入新的 CSS 方案（Tailwind、SCSS、CSS Modules 等）
 - 颜色值必须使用设计系统定义的色值，不要随意新增颜色
-- 响应式断点固定为 4 档：`>1100px` / `860-1100px` / `≤860px` / `≤520px`
+- 响应式断点固定为 5 档：`>1100px` / `860-1100px` / `≤860px` / `≤640px` / `≤520px` / `≤480px`
 
 ### 2.3 设计 Token
 - 颜色定义在 `src/tokens/design.ts` 的 `C` 对象中
@@ -51,7 +51,8 @@ src/
 ├── hooks/
 │   ├── useClock.ts         # 实时时钟 hook
 │   ├── useCalendar.ts      # 日历导航 hook
-│   └── useAudioPlayer.ts   # 音频播放器 hook
+│   ├── useAudioPlayer.ts   # 音频播放器 hook
+│   └── useContentManager.ts # 内容管理 hook（localStorage CRUD）
 ├── components/
 │   ├── StatusBadge.tsx      # 状态徽章
 │   ├── Avatar.tsx           # 头像
@@ -73,6 +74,7 @@ src/
 │   ├── PhotoWallPage.tsx    # 照片墙
 │   ├── ArticlesPage.tsx     # 文章列表+详情
 │   ├── ProjectsPage.tsx     # 项目展示
+│   ├── AdminPage.tsx        # 管理面板（登录 + 文章/项目/照片 CRUD）
 │   └── SubPage.tsx          # 通用子页面（关于/推荐）
 ├── data/
 │   ├── siteData.ts          # 站点数据
@@ -195,6 +197,15 @@ public/
 - 使用 `<audio>` 元素播放真实 mp3
 - 进度条支持拖拽定位
 - 旋转唱片使用 `spin` 动画
+- 音量滑块 + 静音切换
+- 播放模式：列表 / 随机 / 单曲循环
+- 可折叠播放列表面板
+
+### 10.6 AdminPage
+- 登录状态存储在 localStorage（`origami00-admin-auth`）
+- 数据通过 `useContentManager` hook 管理
+- 所有表单使用内联展开方式
+- 照片管理支持缩略图预览和排序
 
 ### 10.4 CatSitting (SVG 猫咪)
 - 手绘 SVG，不要替换为图片
@@ -236,3 +247,4 @@ public/
 | 2026-04-27 | v1.0 | 初始版本，11 条规则 |
 | 2026-04-27 | v1.1 | 更新文件结构（.jsx→.tsx）、依赖列表、禁止事项，移除过时规则 |
 | 2026-04-27 | v2.0 | 更新目录结构（拆分后）、设计令牌路径、新增测试规范、更新构建脚本、更新禁止事项 |
+| 2026-04-27 | v2.1 | 新增 useContentManager hook、AdminPage、640px 断点、MusicPlayer 增强 |

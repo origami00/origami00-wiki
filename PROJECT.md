@@ -53,7 +53,8 @@ src/
 ├── hooks/
 │   ├── useClock.ts         # 实时时钟 hook
 │   ├── useCalendar.ts      # 日历导航 hook
-│   └── useAudioPlayer.ts   # 音频播放器 hook
+│   ├── useAudioPlayer.ts   # 音频播放器 hook
+│   └── useContentManager.ts # 内容管理 hook（localStorage CRUD）
 ├── components/
 │   ├── StatusBadge.tsx      # 状态徽章
 │   ├── Avatar.tsx           # 头像
@@ -75,6 +76,7 @@ src/
 │   ├── PhotoWallPage.tsx    # 照片墙
 │   ├── ArticlesPage.tsx     # 文章列表+详情
 │   ├── ProjectsPage.tsx     # 项目展示
+│   ├── AdminPage.tsx        # 管理面板（登录 + 文章/项目/照片 CRUD）
 │   └── SubPage.tsx          # 通用子页面（关于/推荐）
 ├── data/
 │   ├── siteData.ts          # 站点数据
@@ -100,6 +102,7 @@ public/
 - 嵌套路由：`MainLayout` 包含侧边栏 + `<Outlet />`，每个页面独立组件
 - 懒加载：所有页面组件通过 `React.lazy()` 按需加载
 - 模块化：21 个独立模块，单文件 ≤160 行
+- 内容管理：`useContentManager` hook + `AdminPage` 提供 localStorage CRUD
 
 ---
 
@@ -171,6 +174,7 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const PhotoWallPage = lazy(() => import("./pages/PhotoWallPage"));
 const ArticlesPage = lazy(() => import("./pages/ArticlesPage"));
 const ProjectsPage = lazy(() => import("./pages/ProjectsPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 const SubPage = lazy(() => import("./pages/SubPage"));
 
 <Route element={<MainLayout />}>
@@ -178,6 +182,7 @@ const SubPage = lazy(() => import("./pages/SubPage"));
   <Route path="photo-wall" element={<PhotoWallPage />} />
   <Route path="articles" element={<ArticlesPage />} />
   <Route path="projects" element={<ProjectsPage />} />
+  <Route path="admin" element={<AdminPage />} />
   <Route path="about" element={<SubPage />} />
   <Route path="recommendations" element={<SubPage />} />
   <Route path="*" element={<Navigate to="/" replace />} />
@@ -192,6 +197,7 @@ const SubPage = lazy(() => import("./pages/SubPage"));
 | `/photo-wall` | PhotoWallPage | 照片墙 |
 | `/articles` | ArticlesPage | 文章列表+详情 |
 | `/projects` | ProjectsPage | 项目展示 |
+| `/admin` | AdminPage | 管理面板（需登录） |
 | `/about` | SubPage | 关于网站 |
 | `/recommendations` | SubPage | 推荐分享 |
 | `*` | Navigate | 兜底重定向 |
@@ -304,7 +310,19 @@ import { C, card, iconMap } from "../tokens/design";
 
 ### PhotoWallPage — 照片墙
 
-`src/pages/PhotoWallPage.tsx` 使用 3 列 CSS Grid 展示照片，hover 上浮效果。
+`src/pages/PhotoWallPage.tsx` 使用拍立得散落布局展示照片：
+- 封面大图 + 拍立得网格（随机旋转角度）
+- 点击打开灯箱（lightbox），支持左右切换、键盘导航
+- 照片数据通过 `useContentManager` 获取，支持管理面板动态修改
+
+### AdminPage — 管理面板
+
+`src/pages/AdminPage.tsx` 是内容管理后台：
+- **登录系统**：localStorage 存储登录状态，支持邮箱+密码登录
+- **Tab 切换**：文章管理 / 项目管理 / 照片管理
+- **CRUD 操作**：新增、编辑、删除条目，表单内联展开
+- **重置功能**：清空 localStorage 恢复默认数据
+- **照片管理**：缩略图预览、标题修改、上下移动排序
 
 ---
 
@@ -347,14 +365,45 @@ import { C, card, iconMap } from "../tokens/design";
 | `track` | object | 当前曲目 `{ title, artist, src }` |
 | `playing` | boolean | 是否正在播放 |
 | `progress` | number | 0-100 播放进度 |
+| `volume` | number | 0-1 音量 |
+| `playMode` | PlayMode | 当前播放模式 `"list"` / `"shuffle"` / `"loop"` |
 | `toggle` | function | 播放/暂停 |
 | `next` | function | 下一首 |
 | `prev` | function | 上一首 |
 | `seek` | function | 跳转进度 |
+| `setVolume` | function | 设置音量 |
+| `cycleMode` | function | 循环切换播放模式 |
 | `elapsedStr` | string | 已播放时间 `"01:23"` |
 | `totalStr` | string | 总时长 `"03:18"` |
 
 使用 `<audio>` 元素播放真实 mp3，监听 `timeupdate` 和 `ended` 事件。12 首 mp3 文件在 `public/Assets/音乐/`。
+
+### useContentManager()
+
+`src/hooks/useContentManager.ts` — localStorage 内容管理
+
+| 返回值 | 类型 | 说明 |
+|--------|------|------|
+| `articles` | Article[] | 文章列表（localStorage 优先，回退静态数据） |
+| `projects` | Project[] | 项目列表 |
+| `photos` | PhotoWallItem[] | 照片列表 |
+| `addArticle` | function | 新增文章 |
+| `updateArticle` | function | 更新文章 |
+| `deleteArticle` | function | 删除文章 |
+| `addProject` | function | 新增项目 |
+| `updateProject` | function | 更新项目 |
+| `deleteProject` | function | 删除项目 |
+| `addPhoto` | function | 新增照片 |
+| `updatePhoto` | function | 更新照片 |
+| `deletePhoto` | function | 删除照片 |
+| `movePhoto` | function | 移动照片位置 |
+| `resetArticles` | function | 重置文章为默认数据 |
+| `resetProjects` | function | 重置项目为默认数据 |
+| `resetPhotos` | function | 重置照片为默认数据 |
+
+localStorage key：`origami00-articles` / `origami00-projects` / `origami00-photos`
+
+合并策略：localStorage 中有数据时使用 localStorage，为空时使用静态默认数据。AdminPage 和展示页面共用此 hook，数据自动同步。
 
 ---
 
@@ -365,7 +414,7 @@ import { C, card, iconMap } from "../tokens/design";
 ```
 ┌─────────────────┐
 │     😺 头像      │
-│    小猫咪        │
+│   Origami00      │
 │   ● 开发中       │
 │ ─────────────── │
 │ 🏠 首页         │
@@ -373,6 +422,7 @@ import { C, card, iconMap } from "../tokens/design";
 │ ✨ 我的项目      │
 │ ℹ️ 关于网站      │
 │ ❤️ 推荐分享      │
+│ ⚙️ 管理         │
 └─────────────────┘
 ```
 
@@ -416,6 +466,9 @@ import { C, card, iconMap } from "../tokens/design";
 - 旋转唱片（`spin` 动画）
 - 进度条支持拖拽
 - 播放/暂停/上下首控制
+- 音量滑块 + 静音切换
+- 播放模式切换（列表/随机/单曲循环）
+- 可折叠播放列表面板，支持拖拽排序
 
 ### PageTransition — 页面过渡
 
@@ -510,6 +563,7 @@ html, body, #root { min-height: 100%; }
 | >1100px | 桌面端 | 180px 侧边栏 + 2 列瀑布流 |
 | 860-1100px | 平板/小桌面 | 170px 侧边栏 + 2 列瀑布流 |
 | ≤860px | 手机/小平板 | 单列堆叠，侧边栏变水平导航条 |
+| ≤640px | 手机 | 管理面板/文章/项目/照片墙移动端适配 |
 | ≤520px | 小手机 | 更紧凑间距 |
 | ≤480px | 超小手机 | 进一步紧凑 |
 
@@ -639,8 +693,10 @@ npm run test:coverage # 覆盖率报告
 | 路由结构 | 嵌套路由 + Outlet | React Router 原生模式，性能更优 |
 | 组件架构 | 21 个独立模块 | 单文件 ≤160 行，便于维护 |
 | 图标库 | Lucide React | 线性风格统一，体积小 |
-| 数据管理 | 集中 `data/` 目录 | 单文件修改，无需多处改动 |
-| 音乐播放 | 真实 `<audio>` + mp3 | 12 首本地 mp3，进度条拖拽 |
+| 数据管理 | 集中 `data/` 目录 + useContentManager | 静态数据 + localStorage 双层管理 |
+| 音乐播放 | 真实 `<audio>` + mp3 | 12 首本地 mp3，进度条拖拽，音量/模式控制 |
 | 代码拆分 | React.lazy + Suspense | 首屏只加载 MainLayout + HomePage |
 | 测试框架 | Vitest + RTL | 与 Vite 原生集成，测试用户行为 |
 | 类型系统 | TypeScript strict | 拆分过程中捕获错误 |
+| 内容管理 | useContentManager + localStorage | 无后端方案，AdminPage 提供 CRUD 界面 |
+| 管理认证 | localStorage flag + 硬编码凭据 | 轻量级单用户认证，无需后端 |

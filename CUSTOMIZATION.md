@@ -22,11 +22,12 @@ src/
 ├── hooks/
 │   ├── useClock.ts                 ← 时钟 + 问候语
 │   ├── useCalendar.ts              ← 日历导航
-│   └── useAudioPlayer.ts           ← 音频播放器
+│   ├── useAudioPlayer.ts           ← 音频播放器
+│   └── useContentManager.ts        ← 内容管理（localStorage CRUD）
 ├── components/                     ← 13 个独立组件
 ├── layouts/
 │   └── MainLayout.tsx              ← 主布局（CSS + sidebar + Outlet）
-├── pages/                          ← 5 个页面组件
+├── pages/                          ← 6 个页面组件（含管理面板）
 └── index.css                       ← 全局样式（字体、滚动条、瀑布流）
 ```
 
@@ -40,8 +41,8 @@ src/
 
 ```ts
 export const profile: Profile = {
-  name: "小猫咪",                              // 名字
-  bio: "全栈开发 · 插画爱好者 · 游戏设计探索中",   // 简介
+  name: "Origami00",                            // 名字
+  bio: "ai短片 · 绘画 · 游戏开发探索中",          // 简介
   status: "developing",                         // 状态：online / busy / away / developing
   location: "中国",                             // 所在地
 };
@@ -71,6 +72,7 @@ export const navigation: NavItem[] = [
   { label: "我的项目", icon: "Sparkles", href: "/projects" },
   { label: "关于网站", icon: "Info", href: "/about" },
   { label: "推荐分享", icon: "Heart", href: "/recommendations" },
+  { label: "管理", icon: "Settings", href: "/admin" },
 ];
 ```
 
@@ -93,9 +95,9 @@ export const latestContent: ContentItem[] = [
 
 ```ts
 export const musicList: MusicTrack[] = [
-  { title: "春日散步", artist: "轻音乐集", duration: 198 },
-  { title: "午后阳光", artist: "钢琴曲", duration: 243 },
-  { title: "星空下", artist: "氛围音乐", duration: 312 },
+  { title: "Banger Machine", artist: "Castion", duration: 0, src: "/Assets/音乐/Castion - Banger Machine.mp3" },
+  { title: "Arabian Adventure", artist: "Eugene Star", duration: 0, src: "/Assets/音乐/Eugene Star - Arabian Adventure(New Mix1).mp3" },
+  // ... 共 12 首
 ];
 ```
 
@@ -165,6 +167,35 @@ export const projects: Project[] = [
   // 可增删改条目
 ];
 ```
+
+---
+
+## 📝 管理面板
+
+访问 `/admin` 路由进入管理面板，需要登录后才能操作。
+
+### 登录凭据
+
+管理面板使用硬编码凭据（可在 `AdminPage.tsx` 中修改）：
+- 邮箱：`zz7539847@gmail.com`
+- 密码：`bzlm47925-`
+
+### 管理功能
+
+- **文章管理**：新增、编辑、删除文章，支持标题/标签/日期/摘要/内容/链接
+- **项目管理**：新增、编辑、删除项目，支持状态标签（进行中/已完成/暂停）
+- **照片管理**：新增、编辑、删除照片，支持上下移动排序
+- **重置功能**：清空 localStorage 恢复到代码中的默认数据
+
+### 数据存储
+
+所有修改存储在浏览器 localStorage 中，键名：
+- `origami00-articles` — 文章数据
+- `origami00-projects` — 项目数据
+- `origami00-photos` — 照片数据
+- `origami00-admin-auth` — 登录状态
+
+刷新页面后数据仍然保留。使用「重置」按钮可恢复默认。
 
 ---
 
@@ -299,7 +330,7 @@ const tagColors: Record<string, { bg: string; color: string }> = {
 | `SocialLink` | 社交链接（label, icon, href, bg, color） |
 | `NavItem` | 导航菜单项（label, icon, href） |
 | `ContentItem` | 最新动态条目（title, date, tag, emoji, url） |
-| `MusicTrack` | 音乐曲目（title, artist, duration） |
+| `MusicTrack` | 音乐曲目（title, artist, duration, src） |
 | `PhotoWallItem` | 照片墙条目（title, src） |
 | `Article` | 文章（id, title, summary, date, tag, emoji, content, url?） |
 | `Project` | 项目（id, title, description, date, tags, emoji, status, url?） |

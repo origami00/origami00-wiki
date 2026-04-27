@@ -1,6 +1,6 @@
 # DECISIONS — 关键决策记录
 
-> 最后更新：2026-04-27
+> 最后更新：2026-04-27 v2
 
 ---
 
@@ -222,6 +222,63 @@
 - **决策**：使用 `React.lazy()` + `Suspense` 对所有页面组件进行路由级懒加载
 - **理由**：Vite 原生支持 `import()` 动态导入，React.lazy 无需额外依赖
 - **影响**：构建产物从单个 205KB 文件拆分为 11 个 chunk，首屏只加载 MainLayout + HomePage
+
+---
+
+## D022 — 内容管理面板
+
+- **日期**：2026-04-27
+- **决策**：创建 AdminPage 管理面板，通过网页界面管理文章、项目和照片
+- **备选方案**：
+  - 直接修改代码文件 — 每次都需要重新构建
+  - 接入 Headless CMS（如 Strapi）— 需要后端服务
+  - GitHub API 直接操作 — 需要 token，安全性差
+- **理由**：个人站点无后端，localStorage 是最简单的数据持久化方案。AdminPage 提供友好的 CRUD 界面
+- **影响**：创建 `useContentManager` hook + `AdminPage` 组件，文章/项目/照片页改用 hook 获取数据
+
+---
+
+## D023 — 管理面板认证系统
+
+- **日期**：2026-04-27
+- **决策**：AdminPage 使用 localStorage flag + 硬编码凭据的登录系统
+- **备选方案**：
+  - 无认证直接访问 — 安全性差
+  - JWT + 后端认证 — 需要部署后端
+  - OAuth（GitHub/Google）— 需要配置第三方服务
+- **理由**：个人站点仅站长一人使用，硬编码凭据是最轻量的方案。登录状态存储在 localStorage
+- **影响**：`AdminPage.tsx` 包含 `useAuth()` hook 和 `LoginForm` 组件
+
+---
+
+## D024 — 照片墙管理
+
+- **日期**：2026-04-27
+- **决策**：管理面板新增照片管理 Tab，支持增删改和排序
+- **理由**：照片墙内容需要动态更新，与文章/项目管理统一入口
+- **影响**：`useContentManager` 新增 `addPhoto`/`updatePhoto`/`deletePhoto`/`movePhoto` 方法，`PhotoWallPage` 改用 hook 获取数据
+
+---
+
+## D025 — localStorage 数据持久化
+
+- **日期**：2026-04-27
+- **决策**：使用 localStorage 存储用户自定义的文章、项目和照片数据
+- **备选方案**：
+  - IndexedDB — API 复杂，对当前规模过度
+  - 服务端数据库 — 需要后端
+  - 文件系统（Electron）— 限制为桌面端
+- **理由**：localStorage API 简单，浏览器原生支持，数据持久化到浏览器关闭后仍保留
+- **影响**：`useContentManager` hook 负责读写 localStorage，与静态默认数据合并。重置功能清空 localStorage 恢复默认
+
+---
+
+## D026 — 移动端适配策略
+
+- **日期**：2026-04-27
+- **决策**：新增 ≤640px 断点，为管理面板、文章页、项目页、照片墙添加移动端适配 CSS
+- **理由**：管理面板等新组件在小屏幕上需要调整布局（如表单堆叠、列表紧凑）
+- **影响**：MainLayout.tsx 新增 `@media (max-width: 640px)` 媒体查询，覆盖管理面板/文章/项目/照片/音乐播放器
 
 ---
 

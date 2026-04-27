@@ -7,6 +7,7 @@ import type { Article } from "../types";
 function ArticleDetail({ article, onBack }: { article: Article; onBack: () => void }) {
   return (
     <section
+      className="articleDetail"
       style={{
         ...card, padding: "32px 28px",
         background: "rgba(255,255,255,0.45)",
@@ -76,6 +77,7 @@ export default function ArticlesPage() {
         background: "rgba(255,255,255,0.45)",
         display: "flex", flexDirection: "column", gap: 16,
       }}
+      className="articlesPage"
       aria-label="文章列表"
     >
       <div>
@@ -88,6 +90,7 @@ export default function ArticlesPage() {
           return (
             <button
               key={article.id}
+              className="articleItem"
               onClick={() => setSelected(article)}
               style={{
                 display: "flex", alignItems: "center", gap: 14,
