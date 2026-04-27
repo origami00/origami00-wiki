@@ -1,14 +1,15 @@
 import { useCallback, useState } from "react";
 import { articles as defaultArticles } from "../data/articlesData";
 import { projects as defaultProjects } from "../data/projectsData";
-import { latestContent as defaultLatest, musicList as defaultMusic, photoWallItems as defaultPhotos } from "../data/siteData";
-import type { Article, ContentItem, MusicTrack, PhotoWallItem, Project } from "../types";
+import { latestContent as defaultLatest, musicList as defaultMusic, photoWallItems as defaultPhotos, defaultRecommendations } from "../data/siteData";
+import type { Article, ContentItem, MusicTrack, PhotoWallItem, Project, SubPageLink } from "../types";
 
 const ARTICLES_KEY = "origami00-articles";
 const PROJECTS_KEY = "origami00-projects";
 const PHOTOS_KEY = "origami00-photos";
 const LATEST_KEY = "origami00-latest";
 const MUSIC_KEY = "origami00-music";
+const RECOMMENDATIONS_KEY = "origami00-recommendations";
 
 function loadFromStorage<T>(key: string, fallback: T[]): T[] {
   try {
@@ -39,6 +40,7 @@ export function useContentManager() {
   const [photos, setPhotos] = useState<PhotoWallItem[]>(() => loadFromStorage(PHOTOS_KEY, defaultPhotos));
   const [latest, setLatest] = useState<ContentItem[]>(() => loadFromStorage(LATEST_KEY, defaultLatest));
   const [music, setMusic] = useState<MusicTrack[]>(() => loadFromStorage(MUSIC_KEY, defaultMusic));
+  const [recommendations, setRecommendations] = useState<SubPageLink[]>(() => loadFromStorage(RECOMMENDATIONS_KEY, defaultRecommendations));
 
   const persistArticles = useCallback((next: Article[]) => {
     setArticles(next);
@@ -63,6 +65,11 @@ export function useContentManager() {
   const persistMusic = useCallback((next: MusicTrack[]) => {
     setMusic(next);
     saveToStorage(MUSIC_KEY, next);
+  }, []);
+
+  const persistRecommendations = useCallback((next: SubPageLink[]) => {
+    setRecommendations(next);
+    saveToStorage(RECOMMENDATIONS_KEY, next);
   }, []);
 
   // Articles CRUD
@@ -178,12 +185,38 @@ export function useContentManager() {
     persistMusic(defaultMusic);
   }, [persistMusic]);
 
+  // Recommendations CRUD
+  const addRecommendation = useCallback((item: SubPageLink) => {
+    persistRecommendations([...recommendations, item]);
+  }, [recommendations, persistRecommendations]);
+
+  const updateRecommendation = useCallback((index: number, updates: Partial<SubPageLink>) => {
+    persistRecommendations(recommendations.map((r, i) => (i === index ? { ...r, ...updates } : r)));
+  }, [recommendations, persistRecommendations]);
+
+  const deleteRecommendation = useCallback((index: number) => {
+    persistRecommendations(recommendations.filter((_, i) => i !== index));
+  }, [recommendations, persistRecommendations]);
+
+  const moveRecommendation = useCallback((from: number, to: number) => {
+    if (from === to || from < 0 || to < 0 || from >= recommendations.length || to >= recommendations.length) return;
+    const next = [...recommendations];
+    const [item] = next.splice(from, 1) as [SubPageLink];
+    next.splice(to, 0, item);
+    persistRecommendations(next);
+  }, [recommendations, persistRecommendations]);
+
+  const resetRecommendations = useCallback(() => {
+    persistRecommendations(defaultRecommendations);
+  }, [persistRecommendations]);
+
   return {
     articles,
     projects,
     photos,
     latest,
     music,
+    recommendations,
     addArticle,
     updateArticle,
     deleteArticle,
@@ -202,10 +235,15 @@ export function useContentManager() {
     updateMusic,
     deleteMusic,
     moveMusic,
+    addRecommendation,
+    updateRecommendation,
+    deleteRecommendation,
+    moveRecommendation,
     resetArticles,
     resetProjects,
     resetPhotos,
     resetLatest,
     resetMusic,
+    resetRecommendations,
   };
 }

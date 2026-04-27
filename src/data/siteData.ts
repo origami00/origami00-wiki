@@ -1,4 +1,4 @@
-import type { ContentItem, MusicTrack, NavItem, PhotoWallItem, Profile, SocialLink, SubPageData } from "../types";
+import type { ContentItem, MusicTrack, NavItem, PhotoWallItem, Profile, SocialLink, SubPageData, SubPageLink } from "../types";
 
 export const profile: Profile = {
   name: "Origami00",
@@ -135,3 +135,8 @@ export const subPageContent: Record<string, SubPageData> = {
     ],
   },
 };
+
+export const defaultRecommendations: SubPageLink[] = [
+  { label: "Figma 社区", href: "https://www.figma.com/community" },
+  { label: "Awwwards 灵感", href: "https://www.awwwards.com/" },
+];

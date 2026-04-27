@@ -9,7 +9,10 @@
       "Bash(node -e ' *)",
       "Bash(npx tsc *)",
       "Bash(npx vitest *)",
-      "Bash(npm ls *)"
+      "Bash(npm ls *)",
+      "Bash(python3 -c \"print\\('waiting'\\)\")",
+      "Bash(python3 *)",
+      "Bash(node *)"
     ]
   }
 }

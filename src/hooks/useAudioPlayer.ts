@@ -37,9 +37,11 @@ export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayer
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playModeRef = useRef<PlayMode>("list");
   const playlistRef = useRef(playlist);
+  const playingRef = useRef(playing);
 
   playModeRef.current = playMode;
   playlistRef.current = playlist;
+  playingRef.current = playing;
 
   const trackIdx = playlist[queuePos] ?? 0;
   const track = musicList[trackIdx] ?? musicList[0]!;
@@ -77,7 +79,7 @@ export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayer
         audio.currentTime = 0;
         audio.play().catch(() => setPlaying(false));
       } else {
-        setPlaying(false);
+        // Don't set playing=false here; let the new track auto-play
         setQueuePos((pos) => {
           const next = pos + 1;
           if (next >= len) {
@@ -98,6 +100,11 @@ export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayer
     audio.addEventListener("timeupdate", onTimeUpdate);
     audio.addEventListener("ended", onEnded);
 
+    // Auto-play new track if already playing
+    if (playingRef.current) {
+      audio.play().catch(() => setPlaying(false));
+    }
+
     return () => {
       audio.pause();
       audio.removeEventListener("loadedmetadata", onLoaded);
@@ -106,7 +113,7 @@ export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayer
     };
   }, [trackIdx, track.src]);
 
-  // Play / pause control
+  // Play / pause control (for toggle, next, prev actions)
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -115,7 +122,7 @@ export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayer
     } else {
       audio.pause();
     }
-  }, [playing]);
+  }, [playing, trackIdx]);
 
   // Shuffle: pick a random position different from current
   const shuffleNext = useCallback((current: number): number => {

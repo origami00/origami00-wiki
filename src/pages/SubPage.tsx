@@ -2,6 +2,7 @@ import { ExternalLink, FileText, Heart, Info, Sparkles } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { C, card } from "../tokens/design";
 import { subPageContent } from "../data/siteData";
+import { useContentManager } from "../hooks/useContentManager";
 import type { SubPageIcons } from "../types";
 
 const subPageIcons: SubPageIcons = {
@@ -15,12 +16,17 @@ export default function SubPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const page = location.pathname;
+  const { recommendations } = useContentManager();
 
-  const content = subPageContent[page] ?? {
+  const staticContent = subPageContent[page] ?? {
     title: "未知页面",
     description: "当前页面不存在，请返回首页继续浏览。",
     links: [],
   };
+
+  const content = page === "/recommendations"
+    ? { ...staticContent, links: recommendations }
+    : staticContent;
   const Icon = subPageIcons[page] ?? Info;
 
   return (
