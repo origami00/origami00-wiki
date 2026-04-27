@@ -1,12 +1,13 @@
 import { useCallback, useState } from "react";
 import { articles as defaultArticles } from "../data/articlesData";
 import { projects as defaultProjects } from "../data/projectsData";
-import { photoWallItems as defaultPhotos } from "../data/siteData";
-import type { Article, PhotoWallItem, Project } from "../types";
+import { latestContent as defaultLatest, photoWallItems as defaultPhotos } from "../data/siteData";
+import type { Article, ContentItem, PhotoWallItem, Project } from "../types";
 
 const ARTICLES_KEY = "origami00-articles";
 const PROJECTS_KEY = "origami00-projects";
 const PHOTOS_KEY = "origami00-photos";
+const LATEST_KEY = "origami00-latest";
 
 function loadFromStorage<T>(key: string, fallback: T[]): T[] {
   try {
@@ -35,6 +36,7 @@ export function useContentManager() {
   const [articles, setArticles] = useState<Article[]>(() => loadFromStorage(ARTICLES_KEY, defaultArticles));
   const [projects, setProjects] = useState<Project[]>(() => loadFromStorage(PROJECTS_KEY, defaultProjects));
   const [photos, setPhotos] = useState<PhotoWallItem[]>(() => loadFromStorage(PHOTOS_KEY, defaultPhotos));
+  const [latest, setLatest] = useState<ContentItem[]>(() => loadFromStorage(LATEST_KEY, defaultLatest));
 
   const persistArticles = useCallback((next: Article[]) => {
     setArticles(next);
@@ -49,6 +51,11 @@ export function useContentManager() {
   const persistPhotos = useCallback((next: PhotoWallItem[]) => {
     setPhotos(next);
     saveToStorage(PHOTOS_KEY, next);
+  }, []);
+
+  const persistLatest = useCallback((next: ContentItem[]) => {
+    setLatest(next);
+    saveToStorage(LATEST_KEY, next);
   }, []);
 
   // Articles CRUD
@@ -100,6 +107,28 @@ export function useContentManager() {
     persistPhotos(next);
   }, [photos, persistPhotos]);
 
+  // Latest Content CRUD
+  const addLatest = useCallback((item: Omit<ContentItem, "id">) => {
+    const id = toId(item.title);
+    persistLatest([...latest, { ...item, id }]);
+  }, [latest, persistLatest]);
+
+  const updateLatest = useCallback((id: string, updates: Partial<Omit<ContentItem, "id">>) => {
+    persistLatest(latest.map((l) => (l.id === id ? { ...l, ...updates } : l)));
+  }, [latest, persistLatest]);
+
+  const deleteLatest = useCallback((id: string) => {
+    persistLatest(latest.filter((l) => l.id !== id));
+  }, [latest, persistLatest]);
+
+  const moveLatest = useCallback((from: number, to: number) => {
+    if (from === to || from < 0 || to < 0 || from >= latest.length || to >= latest.length) return;
+    const next = [...latest];
+    const [item] = next.splice(from, 1) as [ContentItem];
+    next.splice(to, 0, item);
+    persistLatest(next);
+  }, [latest, persistLatest]);
+
   // Reset
   const resetArticles = useCallback(() => {
     persistArticles(defaultArticles);
@@ -113,10 +142,15 @@ export function useContentManager() {
     persistPhotos(defaultPhotos);
   }, [persistPhotos]);
 
+  const resetLatest = useCallback(() => {
+    persistLatest(defaultLatest);
+  }, [persistLatest]);
+
   return {
     articles,
     projects,
     photos,
+    latest,
     addArticle,
     updateArticle,
     deleteArticle,
@@ -127,8 +161,13 @@ export function useContentManager() {
     updatePhoto,
     deletePhoto,
     movePhoto,
+    addLatest,
+    updateLatest,
+    deleteLatest,
+    moveLatest,
     resetArticles,
     resetProjects,
     resetPhotos,
+    resetLatest,
   };
 }

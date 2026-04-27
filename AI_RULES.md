@@ -74,7 +74,7 @@ src/
 │   ├── PhotoWallPage.tsx    # 照片墙
 │   ├── ArticlesPage.tsx     # 文章列表+详情
 │   ├── ProjectsPage.tsx     # 项目展示
-│   ├── AdminPage.tsx        # 管理面板（登录 + 文章/项目/照片 CRUD）
+│   ├── AdminPage.tsx        # 管理面板（登录 + 文章/项目/照片/动态 CRUD）
 │   └── SubPage.tsx          # 通用子页面（关于/推荐）
 ├── data/
 │   ├── siteData.ts          # 站点数据
@@ -206,6 +206,7 @@ public/
 - 数据通过 `useContentManager` hook 管理
 - 所有表单使用内联展开方式
 - 照片管理支持缩略图预览和排序
+- 动态管理支持最新动态的增删改，数据同步到首页 LatestContent 卡片
 
 ### 10.4 CatSitting (SVG 猫咪)
 - 手绘 SVG，不要替换为图片

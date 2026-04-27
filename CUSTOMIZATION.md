@@ -185,6 +185,7 @@ export const projects: Project[] = [
 - **文章管理**：新增、编辑、删除文章，支持标题/标签/日期/摘要/内容/链接
 - **项目管理**：新增、编辑、删除项目，支持状态标签（进行中/已完成/暂停）
 - **照片管理**：新增、编辑、删除照片，支持上下移动排序
+- **动态管理**：新增、编辑、删除最新动态，支持标题/标签/日期/Emoji/链接
 - **重置功能**：清空 localStorage 恢复到代码中的默认数据
 
 ### 数据存储
@@ -193,6 +194,7 @@ export const projects: Project[] = [
 - `origami00-articles` — 文章数据
 - `origami00-projects` — 项目数据
 - `origami00-photos` — 照片数据
+- `origami00-latest` — 最新动态数据
 - `origami00-admin-auth` — 登录状态
 
 刷新页面后数据仍然保留。使用「重置」按钮可恢复默认。
@@ -287,6 +289,15 @@ const tagColors: Record<string, { bg: string; color: string }> = {
   前端: { bg: "rgba(110,190,175,0.12)", color: "#6ebeaf" },
 };
 ```
+
+### 最新动态管理
+
+管理面板新增「动态管理」Tab，支持最新动态的增删改：
+
+- 表单字段：标题、Emoji、日期、标签、链接
+- 数据通过 `useContentManager` 的 `latest` 状态管理
+- localStorage 键：`origami00-latest`
+- 首页 `LatestContent` 组件从 `useContentManager` 读取数据
 
 ### 猫咪插画：`src/components/CatSitting.tsx`
 

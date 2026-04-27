@@ -319,10 +319,11 @@ import { C, card, iconMap } from "../tokens/design";
 
 `src/pages/AdminPage.tsx` 是内容管理后台：
 - **登录系统**：localStorage 存储登录状态，支持邮箱+密码登录
-- **Tab 切换**：文章管理 / 项目管理 / 照片管理
+- **Tab 切换**：文章管理 / 项目管理 / 照片管理 / 动态管理
 - **CRUD 操作**：新增、编辑、删除条目，表单内联展开
 - **重置功能**：清空 localStorage 恢复默认数据
 - **照片管理**：缩略图预览、标题修改、上下移动排序
+- **动态管理**：最新动态的增删改，数据同步到首页 LatestContent 卡片
 
 ---
 
@@ -387,6 +388,7 @@ import { C, card, iconMap } from "../tokens/design";
 | `articles` | Article[] | 文章列表（localStorage 优先，回退静态数据） |
 | `projects` | Project[] | 项目列表 |
 | `photos` | PhotoWallItem[] | 照片列表 |
+| `latest` | ContentItem[] | 最新动态列表 |
 | `addArticle` | function | 新增文章 |
 | `updateArticle` | function | 更新文章 |
 | `deleteArticle` | function | 删除文章 |
@@ -397,11 +399,16 @@ import { C, card, iconMap } from "../tokens/design";
 | `updatePhoto` | function | 更新照片 |
 | `deletePhoto` | function | 删除照片 |
 | `movePhoto` | function | 移动照片位置 |
+| `addLatest` | function | 新增最新动态 |
+| `updateLatest` | function | 更新最新动态 |
+| `deleteLatest` | function | 删除最新动态 |
+| `moveLatest` | function | 移动最新动态位置 |
 | `resetArticles` | function | 重置文章为默认数据 |
 | `resetProjects` | function | 重置项目为默认数据 |
 | `resetPhotos` | function | 重置照片为默认数据 |
+| `resetLatest` | function | 重置最新动态为默认数据 |
 
-localStorage key：`origami00-articles` / `origami00-projects` / `origami00-photos`
+localStorage key：`origami00-articles` / `origami00-projects` / `origami00-photos` / `origami00-latest`
 
 合并策略：localStorage 中有数据时使用 localStorage，为空时使用静态默认数据。AdminPage 和展示页面共用此 hook，数据自动同步。
 

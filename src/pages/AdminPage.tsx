@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, RotateCcw, X, Check, FileText, Sparkles, LogOut, Lock, Image, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, Pencil, Trash2, RotateCcw, X, Check, FileText, Sparkles, LogOut, Lock, Image, ChevronUp, ChevronDown, Bell } from "lucide-react";
 import { C, card } from "../tokens/design";
 import { useContentManager } from "../hooks/useContentManager";
-import type { Article, PhotoWallItem, Project } from "../types";
+import type { Article, ContentItem, PhotoWallItem, Project } from "../types";
 
-type Tab = "articles" | "projects" | "photos";
+type Tab = "articles" | "projects" | "photos" | "latest";
 type ArticleForm = Omit<Article, "id">;
 type ProjectForm = Omit<Project, "id">;
 type PhotoForm = PhotoWallItem;
+type LatestForm = Omit<ContentItem, "id">;
 
 const emptyArticle: ArticleForm = { title: "", summary: "", date: "", tag: "", emoji: "", content: "", url: "" };
 const emptyProject: ProjectForm = { title: "", description: "", date: "", tags: [], emoji: "", status: "进行中", url: "" };
 const emptyPhoto: PhotoForm = { title: "", src: "" };
+const emptyLatest: LatestForm = { title: "", date: "", tag: "", emoji: "", url: "" };
 
 const inputStyle: React.CSSProperties = {
   width: "100%", padding: "8px 12px", borderRadius: 10, border: `1px solid rgba(110,190,175,0.2)`,
@@ -87,27 +89,33 @@ function LoginForm({ onLogin }: { onLogin: (email: string, password: string) => 
   );
 }
 
-// ─── Article / Project List + Form ───────────────────────────────
+// ─── Article / Project / Latest List + Form ─────────────────────
 
-function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: ReturnType<typeof useContentManager>; onLogout: () => void }) {
+function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects" | "latest"; cm: ReturnType<typeof useContentManager>; onLogout: () => void }) {
   const [editing, setEditing] = useState<string | null>(null);
-  const [form, setForm] = useState<ArticleForm | ProjectForm>(tab === "articles" ? { ...emptyArticle } : { ...emptyProject });
+  const [form, setForm] = useState<ArticleForm | ProjectForm | LatestForm>(
+    tab === "articles" ? { ...emptyArticle } : tab === "projects" ? { ...emptyProject } : { ...emptyLatest },
+  );
   const [showForm, setShowForm] = useState(false);
 
   const isArticle = tab === "articles";
-  const items = isArticle ? cm.articles : cm.projects;
+  const isLatest = tab === "latest";
+  const items = isArticle ? cm.articles : isLatest ? cm.latest : cm.projects;
 
   const openNew = () => {
     setEditing(null);
-    setForm(isArticle ? { ...emptyArticle } : { ...emptyProject });
+    setForm(isArticle ? { ...emptyArticle } : isLatest ? { ...emptyLatest } : { ...emptyProject });
     setShowForm(true);
   };
 
-  const openEdit = (item: Article | Project) => {
-    setEditing(item.id);
+  const openEdit = (item: Article | Project | ContentItem) => {
+    setEditing(item.id!);
     if (isArticle) {
       const a = item as Article;
       setForm({ title: a.title, summary: a.summary, date: a.date, tag: a.tag, emoji: a.emoji, content: a.content, url: a.url ?? "" });
+    } else if (isLatest) {
+      const l = item as ContentItem;
+      setForm({ title: l.title, date: l.date, tag: l.tag, emoji: l.emoji, url: l.url });
     } else {
       const p = item as Project;
       setForm({ title: p.title, description: p.description, date: p.date, tags: p.tags, emoji: p.emoji, status: p.status, url: p.url ?? "" });
@@ -117,7 +125,7 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
 
   const handleDelete = (id: string, title: string) => {
     if (!confirm(`确认删除「${title}」？`)) return;
-    if (isArticle) cm.deleteArticle(id); else cm.deleteProject(id);
+    if (isArticle) cm.deleteArticle(id); else if (isLatest) cm.deleteLatest(id); else cm.deleteProject(id);
   };
 
   const handleSave = () => {
@@ -125,6 +133,10 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
       const a = form as ArticleForm;
       if (!a.title.trim()) return;
       if (editing) cm.updateArticle(editing, a); else cm.addArticle(a);
+    } else if (isLatest) {
+      const l = form as LatestForm;
+      if (!l.title.trim()) return;
+      if (editing) cm.updateLatest(editing, l); else cm.addLatest(l);
     } else {
       const p = form as ProjectForm;
       if (!p.title.trim()) return;
@@ -136,10 +148,12 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
 
   const handleReset = () => {
     if (!confirm("确认重置为默认数据？所有自定义内容将丢失。")) return;
-    if (isArticle) cm.resetArticles(); else cm.resetProjects();
+    if (isArticle) cm.resetArticles(); else if (isLatest) cm.resetLatest(); else cm.resetProjects();
   };
 
   const set = (key: string, value: string | string[]) => setForm((f) => ({ ...f, [key]: value }));
+
+  const tabLabel = isArticle ? "文章" : isLatest ? "动态" : "项目";
 
   return (
     <>
@@ -148,7 +162,7 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
         <h2 style={{ fontSize: 22, fontWeight: 600, color: C.text }}>内容管理</h2>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           <button onClick={openNew} style={{ ...btnBase, background: C.accent, color: "#fff" }}>
-            <Plus size={14} />{isArticle ? "新增文章" : "新增项目"}
+            <Plus size={14} />新增{tabLabel}
           </button>
           <button onClick={handleReset} style={{ ...btnBase, background: "rgba(110,190,175,0.08)", color: C.textSec }}>
             <RotateCcw size={13} />重置
@@ -162,7 +176,7 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
       {/* Form */}
       {showForm && (
         <div className="adminForm" style={{ background: "rgba(255,255,255,0.5)", borderRadius: 16, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 12, border: "1px solid rgba(110,190,175,0.12)" }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 4 }}>{editing ? "编辑" : "新增"}{isArticle ? "文章" : "项目"}</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 4 }}>{editing ? "编辑" : "新增"}{tabLabel}</div>
           <div>
             <label style={labelStyle}>标题 *</label>
             <input style={inputStyle} value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="输入标题" />
@@ -184,7 +198,10 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
               <div><label style={labelStyle}>正文内容</label><textarea style={{ ...inputStyle, minHeight: 120, resize: "vertical", lineHeight: 1.6 }} value={(form as ArticleForm).content} onChange={(e) => set("content", e.target.value)} placeholder="支持 Markdown 格式" /></div>
             </>
           )}
-          {!isArticle && (
+          {isLatest && (
+            <div><label style={labelStyle}>标签</label><input style={inputStyle} value={(form as LatestForm).tag} onChange={(e) => set("tag", e.target.value)} placeholder="如：技术、AI、游戏、前端" /></div>
+          )}
+          {!isArticle && !isLatest && (
             <>
               <div><label style={labelStyle}>描述</label><textarea style={{ ...inputStyle, minHeight: 80, resize: "vertical", lineHeight: 1.6 }} value={(form as ProjectForm).description} onChange={(e) => set("description", e.target.value)} placeholder="项目简介" /></div>
               <div className="adminFormRow" style={{ display: "flex", gap: 10 }}>
@@ -217,11 +234,11 @@ function ContentTab({ tab, cm, onLogout }: { tab: "articles" | "projects"; cm: R
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 500, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
               <div style={{ fontSize: 11, color: C.textMuted, marginTop: 2 }}>
-                {isArticle ? `${(item as Article).tag} · ${item.date}` : `${(item as Project).tags.join(", ")} · ${item.date}`}
+                {isArticle ? `${(item as Article).tag} · ${item.date}` : isLatest ? `${(item as ContentItem).tag} · ${item.date}` : `${(item as Project).tags.join(", ")} · ${item.date}`}
               </div>
             </div>
             <button onClick={() => openEdit(item)} style={{ ...btnBase, padding: "6px 10px", background: "rgba(110,190,175,0.08)", color: C.accent }} title="编辑"><Pencil size={13} /></button>
-            <button onClick={() => handleDelete(item.id, item.title)} style={{ ...btnBase, padding: "6px 10px", background: "rgba(200,100,100,0.08)", color: "#c07070" }} title="删除"><Trash2 size={13} /></button>
+            <button onClick={() => handleDelete(item.id!, item.title)} style={{ ...btnBase, padding: "6px 10px", background: "rgba(200,100,100,0.08)", color: "#c07070" }} title="删除"><Trash2 size={13} /></button>
           </div>
         ))}
       </div>
@@ -335,6 +352,7 @@ const TAB_CONFIG: [Tab, string, typeof FileText][] = [
   ["articles", "文章管理", FileText],
   ["projects", "项目管理", Sparkles],
   ["photos", "照片墙", Image],
+  ["latest", "动态管理", Bell],
 ];
 
 function AdminPanel({ onLogout }: { onLogout: () => void }) {

@@ -1,8 +1,9 @@
 import { Sparkles } from "lucide-react";
 import { C, card } from "../tokens/design";
-import { latestContent } from "../data/siteData";
+import { useContentManager } from "../hooks/useContentManager";
 
 export default function LatestContent() {
+  const { latest } = useContentManager();
   const tagColors: Record<string, { bg: string; color: string }> = {
     技术: { bg: "rgba(110,190,175,0.1)", color: "#5a9e8f" },
     AI: { bg: "rgba(150,130,200,0.1)", color: "#8b7bb8" },
@@ -25,11 +26,11 @@ export default function LatestContent() {
         最新动态
       </div>
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8, overflow: "auto" }}>
-        {latestContent.map((item, i) => {
+        {latest.map((item, i) => {
           const tc = tagColors[item.tag] || { bg: "rgba(110,190,175,0.08)", color: "#6b8a80" };
           return (
             <a
-              key={`${item.title}-${i}`} href={item.url} target="_blank" rel="noopener noreferrer"
+              key={`${item.id ?? item.title}-${i}`} href={item.url} target="_blank" rel="noopener noreferrer"
               style={{
                 display: "flex", alignItems: "center", gap: 12,
                 padding: "10px 12px", borderRadius: 14,

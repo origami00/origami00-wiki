@@ -282,6 +282,23 @@
 
 ---
 
+## D027 — 最新动态管理
+
+- **日期**：2026-04-27
+- **决策**：将 `latestContent` 纳入 `useContentManager` 的 localStorage 持久化体系，管理面板新增「动态管理」Tab
+- **备选方案**：
+  - 保持静态数据，每次修改需手动编辑代码
+  - 使用独立的 localStorage 键和管理逻辑
+- **理由**：最新动态需要频繁更新，与文章/项目/照片管理统一入口，用户体验一致
+- **影响**：
+  - `useContentManager` 新增 `latest` 状态和 CRUD 方法
+  - `AdminPage` 新增「动态管理」Tab（Bell 图标）
+  - `LatestContent` 组件从静态 import 改为 `useContentManager()` 动态读取
+  - `ContentItem` 接口新增可选 `id` 字段
+  - localStorage 新增 `origami00-latest` 键
+
+---
+
 ## 决策模板
 
 新增决策时使用以下格式：

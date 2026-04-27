@@ -23,6 +23,7 @@ export interface NavItem {
 }
 
 export interface ContentItem {
+  id?: string;
   title: string;
   date: string;
   tag: string;
