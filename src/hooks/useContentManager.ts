@@ -1,10 +1,12 @@
 import { useCallback, useState } from "react";
 import { articles as defaultArticles } from "../data/articlesData";
 import { projects as defaultProjects } from "../data/projectsData";
-import type { Article, Project } from "../types";
+import { photoWallItems as defaultPhotos } from "../data/siteData";
+import type { Article, PhotoWallItem, Project } from "../types";
 
 const ARTICLES_KEY = "origami00-articles";
 const PROJECTS_KEY = "origami00-projects";
+const PHOTOS_KEY = "origami00-photos";
 
 function loadFromStorage<T>(key: string, fallback: T[]): T[] {
   try {
@@ -32,6 +34,7 @@ function toId(title: string): string {
 export function useContentManager() {
   const [articles, setArticles] = useState<Article[]>(() => loadFromStorage(ARTICLES_KEY, defaultArticles));
   const [projects, setProjects] = useState<Project[]>(() => loadFromStorage(PROJECTS_KEY, defaultProjects));
+  const [photos, setPhotos] = useState<PhotoWallItem[]>(() => loadFromStorage(PHOTOS_KEY, defaultPhotos));
 
   const persistArticles = useCallback((next: Article[]) => {
     setArticles(next);
@@ -41,6 +44,11 @@ export function useContentManager() {
   const persistProjects = useCallback((next: Project[]) => {
     setProjects(next);
     saveToStorage(PROJECTS_KEY, next);
+  }, []);
+
+  const persistPhotos = useCallback((next: PhotoWallItem[]) => {
+    setPhotos(next);
+    saveToStorage(PHOTOS_KEY, next);
   }, []);
 
   // Articles CRUD
@@ -71,6 +79,27 @@ export function useContentManager() {
     persistProjects(projects.filter((p) => p.id !== id));
   }, [projects, persistProjects]);
 
+  // Photos CRUD
+  const addPhoto = useCallback((photo: PhotoWallItem) => {
+    persistPhotos([...photos, photo]);
+  }, [photos, persistPhotos]);
+
+  const updatePhoto = useCallback((index: number, updates: Partial<PhotoWallItem>) => {
+    persistPhotos(photos.map((p, i) => (i === index ? { ...p, ...updates } : p)));
+  }, [photos, persistPhotos]);
+
+  const deletePhoto = useCallback((index: number) => {
+    persistPhotos(photos.filter((_, i) => i !== index));
+  }, [photos, persistPhotos]);
+
+  const movePhoto = useCallback((from: number, to: number) => {
+    if (from === to || from < 0 || to < 0 || from >= photos.length || to >= photos.length) return;
+    const next = [...photos];
+    const [item] = next.splice(from, 1) as [PhotoWallItem];
+    next.splice(to, 0, item);
+    persistPhotos(next);
+  }, [photos, persistPhotos]);
+
   // Reset
   const resetArticles = useCallback(() => {
     persistArticles(defaultArticles);
@@ -80,16 +109,26 @@ export function useContentManager() {
     persistProjects(defaultProjects);
   }, [persistProjects]);
 
+  const resetPhotos = useCallback(() => {
+    persistPhotos(defaultPhotos);
+  }, [persistPhotos]);
+
   return {
     articles,
     projects,
+    photos,
     addArticle,
     updateArticle,
     deleteArticle,
     addProject,
     updateProject,
     deleteProject,
+    addPhoto,
+    updatePhoto,
+    deletePhoto,
+    movePhoto,
     resetArticles,
     resetProjects,
+    resetPhotos,
   };
 }

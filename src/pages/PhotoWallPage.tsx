@@ -1,22 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { C, card } from "../tokens/design";
-import { photoWallItems } from "../data/siteData";
+import { useContentManager } from "../hooks/useContentManager";
 
 const rotations = [-4, 2, -2, 3, -1, 4, -3, 1, -2];
 
 export default function PhotoWallPage() {
   const navigate = useNavigate();
+  const { photos } = useContentManager();
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
   const closeLightbox = useCallback(() => setLightboxIdx(null), []);
 
   const goPrev = useCallback(() => {
-    setLightboxIdx((i) => (i !== null ? (i - 1 + photoWallItems.length) % photoWallItems.length : null));
+    setLightboxIdx((i) => (i !== null ? (i - 1 + photos.length) % photos.length : null));
   }, []);
 
   const goNext = useCallback(() => {
-    setLightboxIdx((i) => (i !== null ? (i + 1) % photoWallItems.length : null));
+    setLightboxIdx((i) => (i !== null ? (i + 1) % photos.length : null));
   }, []);
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function PhotoWallPage() {
     return () => window.removeEventListener("keydown", handler);
   }, [lightboxIdx, closeLightbox, goPrev, goNext]);
 
-  const cover = photoWallItems[0]!;
+  const cover = photos[0]!;
 
   return (
     <section
@@ -78,7 +79,7 @@ export default function PhotoWallPage() {
 
       {/* 拍立得散落网格 */}
       <div className="polaroidGrid">
-        {photoWallItems.map((item, i) => (
+        {photos.map((item, i) => (
           <figure
             key={item.title + i}
             className="polaroidCard"
@@ -93,7 +94,7 @@ export default function PhotoWallPage() {
 
       {/* 灯箱 */}
       {lightboxIdx !== null && (() => {
-        const current = photoWallItems[lightboxIdx]!;
+        const current = photos[lightboxIdx]!;
         return (
           <div
             className="lightboxOverlay"
@@ -113,7 +114,7 @@ export default function PhotoWallPage() {
             <div className="lightboxCaption">
               {current.title}
               <span style={{ opacity: 0.5, marginLeft: 8, fontSize: 12 }}>
-                {lightboxIdx + 1} / {photoWallItems.length}
+                {lightboxIdx + 1} / {photos.length}
               </span>
             </div>
             <button className="lightboxNav lightboxNavNext" onClick={(e) => { e.stopPropagation(); goNext(); }} aria-label="下一张">
