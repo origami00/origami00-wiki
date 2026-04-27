@@ -13,7 +13,7 @@ describe("CatCard", () => {
     const { container } = render(<CatCard onOpen={() => {}} />);
     const img = container.querySelector("img");
     expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute("src", "/Assets/照片墙资产/23417_86777360146.jpg");
+    expect(img).toHaveAttribute("src", "/static/照片墙资产/23417_86777360146.jpg");
   });
 
   it("calls onOpen when clicked", async () => {

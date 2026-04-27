@@ -32,7 +32,7 @@ export default function CatCard({ onOpen }: CatCardProps) {
         进入照片墙
       </div>
       <img
-        src="/Assets/照片墙资产/23417_86777360146.jpg"
+        src="/static/照片墙资产/23417_86777360146.jpg"
         alt="照片墙封面"
         style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: 20 }}
       />

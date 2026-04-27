@@ -14,7 +14,7 @@ export const socialLinks: SocialLink[] = [
     href: "https://github.com/origami00",
     bg: "rgba(110,190,175,0.08)",
     color: "#5a9e8f",
-    iconSrc: "/Assets/icon/github-fill.png",
+    iconSrc: "/static/icon/github-fill.png",
   },
   {
     label: "Bilibili",
@@ -22,7 +22,7 @@ export const socialLinks: SocialLink[] = [
     href: "https://space.bilibili.com/366074182",
     bg: "rgba(110,190,175,0.06)",
     color: "#6ebeaf",
-    iconSrc: "/Assets/icon/BILIBILI_LOGO.png",
+    iconSrc: "/static/icon/BILIBILI_LOGO.png",
   },
   {
     label: "抖音",
@@ -30,7 +30,7 @@ export const socialLinks: SocialLink[] = [
     href: "https://v.douyin.com/9Nhu7qm9-q8/",
     bg: "rgba(110,190,175,0.08)",
     color: "#5a9e8f",
-    iconSrc: "/Assets/icon/抖音视频.png",
+    iconSrc: "/static/icon/抖音视频.png",
   },
 ];
 
@@ -75,30 +75,30 @@ export const latestContent: ContentItem[] = [
 ];
 
 export const musicList: MusicTrack[] = [
-  { title: "Banger Machine", artist: "Castion", duration: 0, src: "/Assets/音乐/Castion - Banger Machine.mp3" },
-  { title: "Arabian Adventure", artist: "Eugene Star", duration: 0, src: "/Assets/音乐/Eugene Star - Arabian Adventure(New Mix1).mp3" },
-  { title: "先说谎的人", artist: "h3R3", duration: 0, src: "/Assets/音乐/h3R3 - 先说谎的人.mp3" },
-  { title: "We Never", artist: "Hi Noise", duration: 0, src: "/Assets/音乐/Hi Noise - We Never(Radio edit).mp3" },
-  { title: "The Process", artist: "LAKEY INSPIRED", duration: 0, src: "/Assets/音乐/LAKEY INSPIRED - The Process.mp3" },
-  { title: "恋爱频率", artist: "Sasablue", duration: 0, src: "/Assets/音乐/Sasablue - 恋爱频率(伴奏).mp3" },
-  { title: "一样的月光", artist: "徐佳莹", duration: 0, src: "/Assets/音乐/徐佳莹 - 一样的月光.mp3" },
-  { title: "it begins", artist: "牛尾憲輔", duration: 0, src: "/Assets/音乐/牛尾憲輔 - it begins.mp3" },
-  { title: "鸳鸯戏", artist: "耳土", duration: 0, src: "/Assets/音乐/耳土 - 鸳鸯戏.mp3" },
-  { title: "小孩", artist: "蒋孜怡", duration: 0, src: "/Assets/音乐/蒋孜怡 - 小孩.mp3" },
-  { title: "怪獣登場", artist: "高梨康治", duration: 0, src: "/Assets/音乐/高梨康治 - 怪獣 登場進撃2 (UT_M-48).mp3" },
-  { title: "纸飞机", artist: "飞行雪绒", duration: 0, src: "/Assets/音乐/鸣潮先约电台,飞行雪绒 - 纸飞机.mp3" },
+  { title: "Banger Machine", artist: "Castion", duration: 0, src: "/static/音乐/Castion - Banger Machine.mp3" },
+  { title: "Arabian Adventure", artist: "Eugene Star", duration: 0, src: "/static/音乐/Eugene Star - Arabian Adventure(New Mix1).mp3" },
+  { title: "先说谎的人", artist: "h3R3", duration: 0, src: "/static/音乐/h3R3 - 先说谎的人.mp3" },
+  { title: "We Never", artist: "Hi Noise", duration: 0, src: "/static/音乐/Hi Noise - We Never(Radio edit).mp3" },
+  { title: "The Process", artist: "LAKEY INSPIRED", duration: 0, src: "/static/音乐/LAKEY INSPIRED - The Process.mp3" },
+  { title: "恋爱频率", artist: "Sasablue", duration: 0, src: "/static/音乐/Sasablue - 恋爱频率(伴奏).mp3" },
+  { title: "一样的月光", artist: "徐佳莹", duration: 0, src: "/static/音乐/徐佳莹 - 一样的月光.mp3" },
+  { title: "it begins", artist: "牛尾憲輔", duration: 0, src: "/static/音乐/牛尾憲輔 - it begins.mp3" },
+  { title: "鸳鸯戏", artist: "耳土", duration: 0, src: "/static/音乐/耳土 - 鸳鸯戏.mp3" },
+  { title: "小孩", artist: "蒋孜怡", duration: 0, src: "/static/音乐/蒋孜怡 - 小孩.mp3" },
+  { title: "怪獣登場", artist: "高梨康治", duration: 0, src: "/static/音乐/高梨康治 - 怪獣 登場進撃2 (UT_M-48).mp3" },
+  { title: "纸飞机", artist: "飞行雪绒", duration: 0, src: "/static/音乐/鸣潮先约电台,飞行雪绒 - 纸飞机.mp3" },
 ];
 
 export const photoWallItems: PhotoWallItem[] = [
-  { title: "封面", src: "/Assets/照片墙资产/23417_86777360146.jpg" },
-  { title: "插画1", src: "/Assets/照片墙资产/baimaomeimo.jpg" },
-  { title: "风格参考", src: "/Assets/照片墙资产/fenggecankao.jpg" },
-  { title: "房间布局", src: "/Assets/照片墙资产/beijin.jpg" },
-  { title: "背景", src: "/Assets/照片墙资产/beijin2.jpg" },
-  { title: "花卉", src: "/Assets/照片墙资产/flower-9294773_1280.webp" },
-  { title: "随拍", src: "/Assets/照片墙资产/12342_22260975244.jpg" },
-  { title: "插画2", src: "/Assets/照片墙资产/280518dc-3ccf-485e-aa44-52e6a7c54f99.webp" },
-  { title: "线稿", src: "/Assets/照片墙资产/youhuxiantiao.jpg" },
+  { title: "封面", src: "/static/照片墙资产/23417_86777360146.jpg" },
+  { title: "插画1", src: "/static/照片墙资产/baimaomeimo.jpg" },
+  { title: "风格参考", src: "/static/照片墙资产/fenggecankao.jpg" },
+  { title: "房间布局", src: "/static/照片墙资产/beijin.jpg" },
+  { title: "背景", src: "/static/照片墙资产/beijin2.jpg" },
+  { title: "花卉", src: "/static/照片墙资产/flower-9294773_1280.webp" },
+  { title: "随拍", src: "/static/照片墙资产/12342_22260975244.jpg" },
+  { title: "插画2", src: "/static/照片墙资产/280518dc-3ccf-485e-aa44-52e6a7c54f99.webp" },
+  { title: "线稿", src: "/static/照片墙资产/youhuxiantiao.jpg" },
 ];
 
 export const subPageContent: Record<string, SubPageData> = {

@@ -16,7 +16,7 @@ export default function Avatar({ size = 64, className }: AvatarProps) {
       aria-hidden="true"
     >
       <img
-        src="/Assets/头像/youhuxiantiao.jpg"
+        src="/static/头像/youhuxiantiao.jpg"
         alt=""
         style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
       />

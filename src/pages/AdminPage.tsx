@@ -307,7 +307,7 @@ function PhotosTab({ cm, onLogout }: { cm: ReturnType<typeof useContentManager>;
           </div>
           <div>
             <label style={labelStyle}>图片路径 *</label>
-            <input style={inputStyle} value={form.src} onChange={(e) => setForm((f) => ({ ...f, src: e.target.value }))} placeholder="/Assets/照片墙资产/xxx.jpg" />
+            <input style={inputStyle} value={form.src} onChange={(e) => setForm((f) => ({ ...f, src: e.target.value }))} placeholder="/static/照片墙资产/xxx.jpg" />
           </div>
           {form.src && (
             <div>
@@ -413,7 +413,7 @@ function MusicTab({ cm, onLogout }: { cm: ReturnType<typeof useContentManager>; 
           </div>
           <div>
             <label style={labelStyle}>音频路径 *</label>
-            <input style={inputStyle} value={form.src} onChange={(e) => setForm((f) => ({ ...f, src: e.target.value }))} placeholder="/Assets/音乐/xxx.mp3" />
+            <input style={inputStyle} value={form.src} onChange={(e) => setForm((f) => ({ ...f, src: e.target.value }))} placeholder="/static/音乐/xxx.mp3" />
           </div>
           <div className="adminFormActions" style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
             <button onClick={() => { setShowForm(false); setEditing(null); }} style={{ ...btnBase, background: "rgba(110,190,175,0.06)", color: C.textSec }}><X size={14} />取消</button>
