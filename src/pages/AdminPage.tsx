@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, RotateCcw, X, Check, FileText, Sparkles, LogOut, Lock, Image, ChevronUp, ChevronDown, Bell } from "lucide-react";
+import { Plus, Pencil, Trash2, RotateCcw, X, Check, FileText, Sparkles, LogOut, Lock, Image, ChevronUp, ChevronDown, Bell, Music } from "lucide-react";
 import { C, card } from "../tokens/design";
 import { useContentManager } from "../hooks/useContentManager";
-import type { Article, ContentItem, PhotoWallItem, Project } from "../types";
+import type { Article, ContentItem, MusicTrack, PhotoWallItem, Project } from "../types";
 
-type Tab = "articles" | "projects" | "photos" | "latest";
+type Tab = "articles" | "projects" | "photos" | "latest" | "music";
 type ArticleForm = Omit<Article, "id">;
 type ProjectForm = Omit<Project, "id">;
 type PhotoForm = PhotoWallItem;
@@ -14,6 +14,7 @@ const emptyArticle: ArticleForm = { title: "", summary: "", date: "", tag: "", e
 const emptyProject: ProjectForm = { title: "", description: "", date: "", tags: [], emoji: "", status: "进行中", url: "" };
 const emptyPhoto: PhotoForm = { title: "", src: "" };
 const emptyLatest: LatestForm = { title: "", date: "", tag: "", emoji: "", url: "" };
+const emptyMusic: MusicTrack = { title: "", artist: "", duration: 0, src: "" };
 
 const inputStyle: React.CSSProperties = {
   width: "100%", padding: "8px 12px", borderRadius: 10, border: `1px solid rgba(110,190,175,0.2)`,
@@ -346,6 +347,108 @@ function PhotosTab({ cm, onLogout }: { cm: ReturnType<typeof useContentManager>;
   );
 }
 
+// ─── Music Tab ──────────────────────────────────────────────────
+
+function MusicTab({ cm, onLogout }: { cm: ReturnType<typeof useContentManager>; onLogout: () => void }) {
+  const [editing, setEditing] = useState<number | null>(null);
+  const [form, setForm] = useState<MusicTrack>({ ...emptyMusic });
+  const [showForm, setShowForm] = useState(false);
+
+  const openNew = () => {
+    setEditing(null);
+    setForm({ ...emptyMusic });
+    setShowForm(true);
+  };
+
+  const openEdit = (index: number) => {
+    const item = cm.music[index];
+    if (!item) return;
+    setEditing(index);
+    setForm({ title: item.title, artist: item.artist, duration: item.duration, src: item.src });
+    setShowForm(true);
+  };
+
+  const handleDelete = (index: number, title: string) => {
+    if (!confirm(`确认删除「${title}」？`)) return;
+    cm.deleteMusic(index);
+  };
+
+  const handleSave = () => {
+    if (!form.title.trim() || !form.src.trim()) return;
+    if (editing !== null) cm.updateMusic(editing, form);
+    else cm.addMusic(form);
+    setShowForm(false);
+    setEditing(null);
+  };
+
+  const handleReset = () => {
+    if (!confirm("确认重置为默认数据？所有自定义内容将丢失。")) return;
+    cm.resetMusic();
+  };
+
+  return (
+    <>
+      <div className="adminActions" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+        <h2 style={{ fontSize: 22, fontWeight: 600, color: C.text }}>内容管理</h2>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          <button onClick={openNew} style={{ ...btnBase, background: C.accent, color: "#fff" }}><Plus size={14} />新增音乐</button>
+          <button onClick={handleReset} style={{ ...btnBase, background: "rgba(110,190,175,0.08)", color: C.textSec }}><RotateCcw size={13} />重置</button>
+          <button onClick={onLogout} style={{ ...btnBase, background: "rgba(200,100,100,0.08)", color: "#c07070" }} title="退出登录"><LogOut size={13} />退出</button>
+        </div>
+      </div>
+
+      {/* Form */}
+      {showForm && (
+        <div className="adminForm" style={{ background: "rgba(255,255,255,0.5)", borderRadius: 16, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 12, border: "1px solid rgba(110,190,175,0.12)" }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 4 }}>{editing !== null ? "编辑" : "新增"}音乐</div>
+          <div className="adminFormRow" style={{ display: "flex", gap: 10 }}>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>标题 *</label>
+              <input style={inputStyle} value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="歌曲名称" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <label style={labelStyle}>艺术家</label>
+              <input style={inputStyle} value={form.artist} onChange={(e) => setForm((f) => ({ ...f, artist: e.target.value }))} placeholder="歌手/作者" />
+            </div>
+          </div>
+          <div>
+            <label style={labelStyle}>音频路径 *</label>
+            <input style={inputStyle} value={form.src} onChange={(e) => setForm((f) => ({ ...f, src: e.target.value }))} placeholder="/Assets/音乐/xxx.mp3" />
+          </div>
+          <div className="adminFormActions" style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
+            <button onClick={() => { setShowForm(false); setEditing(null); }} style={{ ...btnBase, background: "rgba(110,190,175,0.06)", color: C.textSec }}><X size={14} />取消</button>
+            <button onClick={handleSave} style={{ ...btnBase, background: C.accent, color: "#fff" }}><Check size={14} />保存</button>
+          </div>
+        </div>
+      )}
+
+      {/* List */}
+      <div className="adminList" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {cm.music.length === 0 && <div style={{ textAlign: "center", padding: 24, color: C.textMuted, fontSize: 13 }}>暂无音乐</div>}
+        {cm.music.map((item, i) => (
+          <div key={`${item.src}-${i}`} className="adminMusicItem" style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 14px", borderRadius: 14, background: "rgba(255,255,255,0.4)", transition: "all 0.2s" }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.65)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.4)"; }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(110,190,175,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <Music size={18} color={C.accent} />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: C.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+              <div className="adminMusicPath" style={{ fontSize: 11, color: C.textMuted, marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.artist ? `${item.artist} · ${item.src}` : item.src}</div>
+            </div>
+            <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+              <button onClick={() => cm.moveMusic(i, i - 1)} disabled={i === 0} style={{ ...btnBase, padding: "5px 7px", background: "rgba(110,190,175,0.06)", color: C.textMuted, opacity: i === 0 ? 0.3 : 1 }} title="上移"><ChevronUp size={13} /></button>
+              <button onClick={() => cm.moveMusic(i, i + 1)} disabled={i === cm.music.length - 1} style={{ ...btnBase, padding: "5px 7px", background: "rgba(110,190,175,0.06)", color: C.textMuted, opacity: i === cm.music.length - 1 ? 0.3 : 1 }} title="下移"><ChevronDown size={13} /></button>
+            </div>
+            <button onClick={() => openEdit(i)} style={{ ...btnBase, padding: "6px 10px", background: "rgba(110,190,175,0.08)", color: C.accent }} title="编辑"><Pencil size={13} /></button>
+            <button onClick={() => handleDelete(i, item.title)} style={{ ...btnBase, padding: "6px 10px", background: "rgba(200,100,100,0.08)", color: "#c07070" }} title="删除"><Trash2 size={13} /></button>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
+
 // ─── Main Admin Panel ────────────────────────────────────────────
 
 const TAB_CONFIG: [Tab, string, typeof FileText][] = [
@@ -353,6 +456,7 @@ const TAB_CONFIG: [Tab, string, typeof FileText][] = [
   ["projects", "项目管理", Sparkles],
   ["photos", "照片墙", Image],
   ["latest", "动态管理", Bell],
+  ["music", "音乐管理", Music],
 ];
 
 function AdminPanel({ onLogout }: { onLogout: () => void }) {
@@ -379,7 +483,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
         ))}
       </div>
 
-      {tab === "photos" ? <PhotosTab cm={cm} onLogout={onLogout} /> : <ContentTab tab={tab} cm={cm} onLogout={onLogout} />}
+      {tab === "photos" ? <PhotosTab cm={cm} onLogout={onLogout} /> : tab === "music" ? <MusicTab cm={cm} onLogout={onLogout} /> : <ContentTab tab={tab} cm={cm} onLogout={onLogout} />}
     </section>
   );
 }

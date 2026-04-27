@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { musicList } from "../data/siteData";
+import { musicList as defaultMusic } from "../data/siteData";
+import type { MusicTrack } from "../types";
 
 export type PlayMode = "list" | "shuffle" | "loop";
 
@@ -24,7 +25,8 @@ interface AudioPlayerResult {
   totalStr: string;
 }
 
-export function useAudioPlayer(): AudioPlayerResult {
+export function useAudioPlayer(tracks: MusicTrack[] = defaultMusic): AudioPlayerResult {
+  const musicList = tracks;
   const [playlist, setPlaylist] = useState<number[]>(() => musicList.map((_, i) => i));
   const [queuePos, setQueuePos] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -41,6 +43,14 @@ export function useAudioPlayer(): AudioPlayerResult {
 
   const trackIdx = playlist[queuePos] ?? 0;
   const track = musicList[trackIdx] ?? musicList[0]!;
+
+  // Reset playlist when track list size changes
+  useEffect(() => {
+    setPlaylist(musicList.map((_, i) => i));
+    setQueuePos(0);
+    setPlaying(false);
+    setProgress(0);
+  }, [musicList.length]);
 
   // Sync volume to audio element
   useEffect(() => {

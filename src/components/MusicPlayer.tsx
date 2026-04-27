@@ -6,14 +6,15 @@ import {
 } from "lucide-react";
 import { C, card } from "../tokens/design";
 import { useAudioPlayer, type PlayMode } from "../hooks/useAudioPlayer";
-import { musicList } from "../data/siteData";
+import { useContentManager } from "../hooks/useContentManager";
 
 const MODE_ORDER: PlayMode[] = ["list", "shuffle", "loop"];
 const MODE_LABELS: Record<PlayMode, string> = { list: "列表播放", shuffle: "随机播放", loop: "单曲循环" };
 const MODE_ICONS: Record<PlayMode, typeof ListMusic> = { list: ListMusic, shuffle: Shuffle, loop: Repeat };
 
 export default function MusicPlayer() {
-  const player = useAudioPlayer();
+  const { music: musicList } = useContentManager();
+  const player = useAudioPlayer(musicList);
   const {
     track, playing, progress, volume, playMode, playlist, queuePos,
     toggle, next, prev, seek, setVolume, setPlayMode, playTrack, reorderPlaylist,

@@ -1,13 +1,14 @@
 import { useCallback, useState } from "react";
 import { articles as defaultArticles } from "../data/articlesData";
 import { projects as defaultProjects } from "../data/projectsData";
-import { latestContent as defaultLatest, photoWallItems as defaultPhotos } from "../data/siteData";
-import type { Article, ContentItem, PhotoWallItem, Project } from "../types";
+import { latestContent as defaultLatest, musicList as defaultMusic, photoWallItems as defaultPhotos } from "../data/siteData";
+import type { Article, ContentItem, MusicTrack, PhotoWallItem, Project } from "../types";
 
 const ARTICLES_KEY = "origami00-articles";
 const PROJECTS_KEY = "origami00-projects";
 const PHOTOS_KEY = "origami00-photos";
 const LATEST_KEY = "origami00-latest";
+const MUSIC_KEY = "origami00-music";
 
 function loadFromStorage<T>(key: string, fallback: T[]): T[] {
   try {
@@ -37,6 +38,7 @@ export function useContentManager() {
   const [projects, setProjects] = useState<Project[]>(() => loadFromStorage(PROJECTS_KEY, defaultProjects));
   const [photos, setPhotos] = useState<PhotoWallItem[]>(() => loadFromStorage(PHOTOS_KEY, defaultPhotos));
   const [latest, setLatest] = useState<ContentItem[]>(() => loadFromStorage(LATEST_KEY, defaultLatest));
+  const [music, setMusic] = useState<MusicTrack[]>(() => loadFromStorage(MUSIC_KEY, defaultMusic));
 
   const persistArticles = useCallback((next: Article[]) => {
     setArticles(next);
@@ -56,6 +58,11 @@ export function useContentManager() {
   const persistLatest = useCallback((next: ContentItem[]) => {
     setLatest(next);
     saveToStorage(LATEST_KEY, next);
+  }, []);
+
+  const persistMusic = useCallback((next: MusicTrack[]) => {
+    setMusic(next);
+    saveToStorage(MUSIC_KEY, next);
   }, []);
 
   // Articles CRUD
@@ -146,11 +153,37 @@ export function useContentManager() {
     persistLatest(defaultLatest);
   }, [persistLatest]);
 
+  // Music CRUD
+  const addMusic = useCallback((track: MusicTrack) => {
+    persistMusic([...music, track]);
+  }, [music, persistMusic]);
+
+  const updateMusic = useCallback((index: number, updates: Partial<MusicTrack>) => {
+    persistMusic(music.map((t, i) => (i === index ? { ...t, ...updates } : t)));
+  }, [music, persistMusic]);
+
+  const deleteMusic = useCallback((index: number) => {
+    persistMusic(music.filter((_, i) => i !== index));
+  }, [music, persistMusic]);
+
+  const moveMusic = useCallback((from: number, to: number) => {
+    if (from === to || from < 0 || to < 0 || from >= music.length || to >= music.length) return;
+    const next = [...music];
+    const [item] = next.splice(from, 1) as [MusicTrack];
+    next.splice(to, 0, item);
+    persistMusic(next);
+  }, [music, persistMusic]);
+
+  const resetMusic = useCallback(() => {
+    persistMusic(defaultMusic);
+  }, [persistMusic]);
+
   return {
     articles,
     projects,
     photos,
     latest,
+    music,
     addArticle,
     updateArticle,
     deleteArticle,
@@ -165,9 +198,14 @@ export function useContentManager() {
     updateLatest,
     deleteLatest,
     moveLatest,
+    addMusic,
+    updateMusic,
+    deleteMusic,
+    moveMusic,
     resetArticles,
     resetProjects,
     resetPhotos,
     resetLatest,
+    resetMusic,
   };
 }
