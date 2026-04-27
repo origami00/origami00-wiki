@@ -13,6 +13,7 @@ export interface SocialLink {
   href: string;
   bg: string;
   color: string;
+  iconSrc?: string;
 }
 
 export interface NavItem {
@@ -33,6 +34,7 @@ export interface MusicTrack {
   title: string;
   artist: string;
   duration: number;
+  src: string;
 }
 
 export interface PhotoWallItem {

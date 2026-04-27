@@ -10,6 +10,9 @@
 - [x] **集成 TypeScript** — 所有文件迁移为 `.tsx`/`.ts`，`src/types/index.ts` 定义全部接口，`tsc --noEmit` 通过
 - [x] **配置 ESLint + Prettier** — `eslint.config.js` + `.prettierrc`，`npm run lint` 通过
 - [x] **更新 index.html** — 脚本引用从 `main.jsx` 改为 `main.tsx`
+- [x] **集成真实资产** — 迁移 Assets/ 到 public/，Avatar 使用真实头像，SocialLinks 使用自定义图标+真实 URL，PhotoWall 使用真实照片
+- [x] **真实音频播放器** — useAudioPlayer 重写为 `<audio>` 元素，12 首 mp3 文件
+- [x] **移动端响应式增强** — 新增 ≤480px 断点，覆盖 6 个组件的移动端适配
 
 ---
 
@@ -56,7 +59,7 @@
 
 **复杂度：XL | 风险：中 | 预估：5-7天**
 
-### 6. 真实音频播放器
+### 6. 真实音频播放器 ✅
 - 重写 `useAudioPlayer` hook：使用 `<audio>` 元素替代 `setInterval`
 - MusicPlayer 组件更新：自定义进度条拖拽（onMouseDown/onTouchStart）
 - 在 `public/audio/` 放置 3 个 mp3 文件
@@ -75,7 +78,7 @@
 
 **复杂度：L | 风险：中 | 预估：3-4天**
 
-### 8. 移动端响应式增强
+### 8. 移动端响应式增强 ✅
 - 新增 `@media (max-width: 480px)` 断点
 - 移除 SubPage 中硬编码的 `min-height: 500px`
 - **验证点**：320px-768px 宽度下布局完整无溢出
@@ -113,11 +116,11 @@ Phase 2:
 - [ ] 路由重构
 
 Phase 3:
-- [ ] 真实音频播放器
+- [x] 真实音频播放器
 - [ ] 文章/项目展示页
 
 Phase 4:
-- [ ] 移动端响应式增强
+- [x] 移动端响应式增强
 - [ ] 页面切换过渡动画
 - [ ] 组件懒加载
 

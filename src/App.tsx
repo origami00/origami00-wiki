@@ -138,34 +138,80 @@ function useAudioPlayer(): AudioPlayerResult {
   const [trackIdx, setTrackIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const ref = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    if (playing) {
-      ref.current = setInterval(() => {
-        setProgress((old) => {
-          if (old >= 100) { setPlaying(false); return 0; }
-          return old + 100 / (musicList[trackIdx]?.duration ?? 198);
-        });
-      }, 1000);
-    } else if (ref.current) {
-      clearInterval(ref.current);
-    }
-    return () => { if (ref.current) clearInterval(ref.current); };
-  }, [playing, trackIdx]);
+  const [duration, setDuration] = useState(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const track = musicList[trackIdx] ?? musicList[0]!;
-  const elapsed = Math.floor((progress / 100) * track.duration);
+
+  useEffect(() => {
+    const audio = new Audio(track.src);
+    audio.preload = "metadata";
+    audioRef.current = audio;
+
+    const onLoaded = () => setDuration(audio.duration);
+    const onTimeUpdate = () => {
+      if (audio.duration) setProgress((audio.currentTime / audio.duration) * 100);
+    };
+    const onEnded = () => {
+      setPlaying(false);
+      setProgress(0);
+      setTrackIdx((i) => (i + 1) % musicList.length);
+    };
+
+    audio.addEventListener("loadedmetadata", onLoaded);
+    audio.addEventListener("timeupdate", onTimeUpdate);
+    audio.addEventListener("ended", onEnded);
+
+    return () => {
+      audio.pause();
+      audio.removeEventListener("loadedmetadata", onLoaded);
+      audio.removeEventListener("timeupdate", onTimeUpdate);
+      audio.removeEventListener("ended", onEnded);
+    };
+  }, [trackIdx, track.src]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (playing) {
+      audio.play().catch(() => setPlaying(false));
+    } else {
+      audio.pause();
+    }
+  }, [playing]);
+
+  const toggle = () => setPlaying((p) => !p);
+  const seek = (pct: number) => {
+    const audio = audioRef.current;
+    if (audio && audio.duration) {
+      audio.currentTime = (pct / 100) * audio.duration;
+      setProgress(pct);
+    }
+  };
+  const next = () => {
+    setPlaying(false);
+    setProgress(0);
+    setTrackIdx((i) => (i + 1) % musicList.length);
+  };
+  const prev = () => {
+    setPlaying(false);
+    setProgress(0);
+    setTrackIdx((i) => (i - 1 + musicList.length) % musicList.length);
+  };
+
+  const elapsed = Math.floor((progress / 100) * duration);
   const fmt = (s: number): string => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   return {
-    track, playing, progress,
-    toggle: () => setPlaying((old) => !old),
-    next: () => { setTrackIdx((i) => (i + 1) % musicList.length); setProgress(0); setPlaying(false); },
-    prev: () => { setTrackIdx((i) => (i - 1 + musicList.length) % musicList.length); setProgress(0); setPlaying(false); },
-    seek: (pct: number) => setProgress(pct),
+    track: { title: track.title, artist: track.artist, duration },
+    playing,
+    progress,
+    toggle,
+    next,
+    prev,
+    seek,
     elapsedStr: fmt(elapsed),
-    totalStr: fmt(track.duration),
+    totalStr: fmt(duration),
   };
 }
 
@@ -198,15 +244,17 @@ const Avatar = ({ size = 64, className }: AvatarProps) => (
     className={className}
     style={{
       width: size, height: size, borderRadius: "50%",
-      background: "linear-gradient(145deg, #b8e6d8, #8dd0bc, #6ebeaf)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: size * 0.42, border: "3px solid rgba(255,255,255,0.8)",
+      overflow: "hidden", flexShrink: 0,
+      border: "3px solid rgba(255,255,255,0.8)",
       boxShadow: "0 4px 16px rgba(110,190,175,0.25)",
-      flexShrink: 0,
     }}
     aria-hidden="true"
   >
-    😺
+    <img
+      src="/Assets/头像/youhuxiantiao.jpg"
+      alt=""
+      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+    />
   </div>
 );
 
@@ -408,7 +456,11 @@ function SocialLinks() {
               e.currentTarget.style.boxShadow = "0 2px 8px rgba(100,160,145,0.04)";
             }}
           >
-            <Icon size={19} />
+            {s.iconSrc ? (
+              <img src={s.iconSrc} alt="" style={{ width: 22, height: 22, objectFit: "contain" }} />
+            ) : (
+              <Icon size={19} />
+            )}
           </a>
         );
       })}

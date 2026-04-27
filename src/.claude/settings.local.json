@@ -9,7 +9,11 @@
       "Bash(git mv *)",
       "Bash(npx tsc *)",
       "Bash(npm run *)",
-      "Bash(git status *)"
+      "Bash(git status *)",
+      "mcp__ide__executeCode",
+      "Bash(python3 *)",
+      "Bash(python *)",
+      "Bash(node *)"
     ]
   }
 }
