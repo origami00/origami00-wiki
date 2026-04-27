@@ -1,7 +1,16 @@
 import { ExternalLink, Info } from "lucide-react";
 import { subPageContent } from "../data/siteData";
+import type { CardStyle, DesignTokens, SubPageIcons } from "../types";
 
-export default function SubPage({ page, cardStyle, colors, iconMap, onBack }) {
+interface SubPageProps {
+  page: string;
+  cardStyle: CardStyle;
+  colors: DesignTokens;
+  iconMap: SubPageIcons;
+  onBack: () => void;
+}
+
+export default function SubPage({ page, cardStyle, colors, iconMap, onBack }: SubPageProps) {
   const content = subPageContent[page] ?? {
     title: "未知页面",
     description: "当前页面不存在，请返回首页继续浏览。",

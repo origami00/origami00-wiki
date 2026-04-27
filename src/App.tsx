@@ -27,10 +27,11 @@ import {
 } from "./data/siteData";
 import PhotoWallPage from "./pages/PhotoWallPage";
 import SubPage from "./pages/SubPage";
+import type { DesignTokens, CardStyle, IconMap, PageTitleMap, SubPageIcons } from "./types";
 
-const iconMap = { Github: Code2, Tv, Music2, Home, FileText, Sparkles, Info, Heart };
+const iconMap: IconMap = { Github: Code2, Tv, Music2, Home, FileText, Sparkles, Info, Heart };
 
-const C = {
+const C: DesignTokens = {
   accent: "#6ebeaf",
   accentDark: "#5a9e8f",
   accentBg: "rgba(110,190,175,0.08)",
@@ -43,7 +44,7 @@ const C = {
   shadowHover: "0 8px 28px rgba(100,160,145,0.12)",
 };
 
-const card = {
+const card: CardStyle = {
   background: C.card,
   backdropFilter: "blur(18px)",
   WebkitBackdropFilter: "blur(18px)",
@@ -53,7 +54,15 @@ const card = {
   transition: "box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease",
 };
 
-function useClock() {
+interface ClockResult {
+  hours: string;
+  minutes: string;
+  seconds: string;
+  dateStr: string;
+  greeting: string;
+}
+
+function useClock(): ClockResult {
   const [time, setTime] = useState(() => {
     const now = new Date();
     return new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
@@ -77,7 +86,20 @@ function useClock() {
   return { hours, minutes, seconds, dateStr, greeting };
 }
 
-function useCalendar() {
+interface CalendarDay {
+  day: number;
+  isToday: boolean;
+}
+
+interface CalendarResult {
+  days: (CalendarDay | null)[];
+  year: number;
+  monthName: string;
+  goNext: () => void;
+  goPrev: () => void;
+}
+
+function useCalendar(): CalendarResult {
   const [offset, setOffset] = useState(0);
   const today = new Date();
   const viewDate = new Date(today.getFullYear(), today.getMonth() + offset, 1);
@@ -100,18 +122,30 @@ function useCalendar() {
   };
 }
 
-function useAudioPlayer() {
+interface AudioPlayerResult {
+  track: { title: string; artist: string; duration: number };
+  playing: boolean;
+  progress: number;
+  toggle: () => void;
+  next: () => void;
+  prev: () => void;
+  seek: (pct: number) => void;
+  elapsedStr: string;
+  totalStr: string;
+}
+
+function useAudioPlayer(): AudioPlayerResult {
   const [trackIdx, setTrackIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  const ref = useRef(null);
+  const ref = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (playing) {
       ref.current = setInterval(() => {
         setProgress((old) => {
           if (old >= 100) { setPlaying(false); return 0; }
-          return old + 100 / musicList[trackIdx].duration;
+          return old + 100 / (musicList[trackIdx]?.duration ?? 198);
         });
       }, 1000);
     } else if (ref.current) {
@@ -120,22 +154,26 @@ function useAudioPlayer() {
     return () => { if (ref.current) clearInterval(ref.current); };
   }, [playing, trackIdx]);
 
-  const track = musicList[trackIdx];
+  const track = musicList[trackIdx] ?? musicList[0]!;
   const elapsed = Math.floor((progress / 100) * track.duration);
-  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  const fmt = (s: number): string => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   return {
     track, playing, progress,
     toggle: () => setPlaying((old) => !old),
     next: () => { setTrackIdx((i) => (i + 1) % musicList.length); setProgress(0); setPlaying(false); },
     prev: () => { setTrackIdx((i) => (i - 1 + musicList.length) % musicList.length); setProgress(0); setPlaying(false); },
-    seek: (pct) => setProgress(pct),
+    seek: (pct: number) => setProgress(pct),
     elapsedStr: fmt(elapsed),
     totalStr: fmt(track.duration),
   };
 }
 
-const StatusBadge = ({ status }) => {
+interface StatusBadgeProps {
+  status: "online" | "busy" | "away" | "developing";
+}
+
+const StatusBadge = ({ status }: StatusBadgeProps) => {
   const m = { online: ["#5cb89e", "在线"], busy: ["#e07070", "忙碌"], away: ["#d4b060", "离开"], developing: ["#6ebeaf", "开发中"] };
   const [color, label] = m[status] || m.online;
   return (
@@ -150,7 +188,11 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const Avatar = ({ size = 64 }) => (
+interface AvatarProps {
+  size?: number;
+}
+
+const Avatar = ({ size = 64 }: AvatarProps) => (
   <div
     style={{
       width: size, height: size, borderRadius: "50%",
@@ -220,7 +262,7 @@ function UserSidebar() {
       <div style={{ height: 1, background: "linear-gradient(90deg, transparent, rgba(110,190,175,0.2), transparent)", marginBottom: 12 }} />
       <nav className="sideNavList" style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2, overflow: "auto" }} aria-label="主导航">
         {navigation.map((item) => {
-          const Icon = iconMap[item.icon];
+          const Icon = iconMap[item.icon] ?? Info;
           return (
             <NavLink key={item.href} to={item.href} className={({ isActive }) => `sideNavBtn ${isActive ? "active" : ""}`} aria-label={`进入${item.label}`}>
               <Icon size={15} style={{ opacity: 0.7 }} />
@@ -233,7 +275,11 @@ function UserSidebar() {
   );
 }
 
-function ProfileCard({ greeting }) {
+interface ProfileCardProps {
+  greeting: string;
+}
+
+function ProfileCard({ greeting }: ProfileCardProps) {
   const [hov, setHov] = useState(false);
   return (
     <section
@@ -297,7 +343,11 @@ function ClockCard() {
   );
 }
 
-function CatCard({ onOpen }) {
+interface CatCardProps {
+  onOpen: () => void;
+}
+
+function CatCard({ onOpen }: CatCardProps) {
   const [hov, setHov] = useState(false);
   return (
     <button
@@ -333,7 +383,7 @@ function SocialLinks() {
   return (
     <section style={{ ...card, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, padding: "14px 20px", background: "rgba(255,255,255,0.4)" }} aria-label="社交链接">
       {socialLinks.map((s) => {
-        const Icon = iconMap[s.icon];
+        const Icon = iconMap[s.icon] ?? Info;
         return (
           <a
             key={s.label} href={s.href} target="_blank" rel="noopener noreferrer"
@@ -419,7 +469,7 @@ function CalendarCard() {
 }
 
 function LatestContent() {
-  const tagColors = {
+  const tagColors: Record<string, { bg: string; color: string }> = {
     技术: { bg: "rgba(110,190,175,0.1)", color: "#5a9e8f" },
     AI: { bg: "rgba(150,130,200,0.1)", color: "#8b7bb8" },
     游戏: { bg: "rgba(100,180,160,0.1)", color: "#5cb89e" },
@@ -550,14 +600,14 @@ function MusicPlayer() {
   );
 }
 
-const subPageIcons = {
+const subPageIcons: SubPageIcons = {
   "/articles": FileText,
   "/projects": Sparkles,
   "/about": Info,
   "/recommendations": Heart,
 };
 
-const pageTitleMap = {
+const pageTitleMap: PageTitleMap = {
   "/": "origami00-wiki",
   "/photo-wall": "照片墙 - origami00-wiki",
   "/articles": "我的文章 - origami00-wiki",

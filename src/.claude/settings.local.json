@@ -3,7 +3,12 @@
     "allow": [
       "Read(//e/main_git_repo/origami00-wiki/**)",
       "Read(//mnt/e/main_git_repo/**)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm install *)",
+      "Bash(git mv *)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)"
     ]
   }
 }

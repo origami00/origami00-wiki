@@ -1,11 +1,13 @@
-export const profile = {
+import type { ContentItem, MusicTrack, NavItem, PhotoWallItem, Profile, SocialLink, SubPageData } from "../types";
+
+export const profile: Profile = {
   name: "小猫咪",
   bio: "全栈开发 · 插画爱好者 · 游戏设计探索中",
   status: "developing",
   location: "中国",
 };
 
-export const socialLinks = [
+export const socialLinks: SocialLink[] = [
   {
     label: "GitHub",
     icon: "Github",
@@ -29,7 +31,7 @@ export const socialLinks = [
   },
 ];
 
-export const navigation = [
+export const navigation: NavItem[] = [
   { label: "首页", icon: "Home", href: "/" },
   { label: "我的文章", icon: "FileText", href: "/articles" },
   { label: "我的项目", icon: "Sparkles", href: "/projects" },
@@ -37,7 +39,7 @@ export const navigation = [
   { label: "推荐分享", icon: "Heart", href: "/recommendations" },
 ];
 
-export const latestContent = [
+export const latestContent: ContentItem[] = [
   {
     title: "用 Next.js 搭建个人主页",
     date: "2026-04-12",
@@ -68,13 +70,13 @@ export const latestContent = [
   },
 ];
 
-export const musicList = [
+export const musicList: MusicTrack[] = [
   { title: "春日散步", artist: "轻音乐集", duration: 198 },
   { title: "午后阳光", artist: "钢琴曲", duration: 243 },
   { title: "星空下", artist: "氛围音乐", duration: 312 },
 ];
 
-export const photoWallItems = [
+export const photoWallItems: PhotoWallItem[] = [
   { title: "街头随拍", src: "https://picsum.photos/seed/origami-wall-1/720/520" },
   { title: "晨间光影", src: "https://picsum.photos/seed/origami-wall-2/720/520" },
   { title: "旅行片段", src: "https://picsum.photos/seed/origami-wall-3/720/520" },
@@ -83,7 +85,7 @@ export const photoWallItems = [
   { title: "自然风景", src: "https://picsum.photos/seed/origami-wall-6/720/520" },
 ];
 
-export const subPageContent = {
+export const subPageContent: Record<string, SubPageData> = {
   "/articles": {
     title: "我的文章",
     description: "这里收录前端开发、AI 工具链与创作实践的文章目录。",

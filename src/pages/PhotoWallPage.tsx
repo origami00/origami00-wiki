@@ -1,6 +1,13 @@
 import { photoWallItems } from "../data/siteData";
+import type { CardStyle, DesignTokens } from "../types";
 
-export default function PhotoWallPage({ cardStyle, colors, onBack }) {
+interface PhotoWallPageProps {
+  cardStyle: CardStyle;
+  colors: DesignTokens;
+  onBack: () => void;
+}
+
+export default function PhotoWallPage({ cardStyle, colors, onBack }: PhotoWallPageProps) {
   return (
     <section
       style={{
