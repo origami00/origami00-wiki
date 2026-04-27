@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2, RotateCcw, X, Check, FileText, Sparkles } from "lucide-react";
+import { Plus, Pencil, Trash2, RotateCcw, X, Check, FileText, Sparkles, LogOut, Lock } from "lucide-react";
 import { C, card } from "../tokens/design";
 import { useContentManager } from "../hooks/useContentManager";
 import type { Article, Project } from "../types";
@@ -22,7 +22,103 @@ const btnBase: React.CSSProperties = {
   borderRadius: 10, border: "none", fontSize: 12.5, fontWeight: 500, cursor: "pointer", transition: "all 0.2s",
 };
 
-export default function AdminPage() {
+const AUTH_KEY = "origami00-admin-auth";
+const ADMIN_EMAIL = "zz7539847@gmail.com";
+const ADMIN_PASSWORD = "bzlm47925-";
+
+function useAuth() {
+  const [authed, setAuthed] = useState(() => {
+    try { return localStorage.getItem(AUTH_KEY) === "true"; } catch { return false; }
+  });
+  const [error, setError] = useState("");
+
+  const login = (email: string, password: string) => {
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      try { localStorage.setItem(AUTH_KEY, "true"); } catch { /* ignore */ }
+      setAuthed(true);
+      setError("");
+      return true;
+    }
+    setError("账号或密码错误");
+    return false;
+  };
+
+  const logout = () => {
+    try { localStorage.removeItem(AUTH_KEY); } catch { /* ignore */ }
+    setAuthed(false);
+  };
+
+  return { authed, error, login, logout };
+}
+
+function LoginForm({ onLogin }: { onLogin: (email: string, password: string) => boolean }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!onLogin(email, password)) {
+      setError("账号或密码错误");
+    }
+  };
+
+  return (
+    <section
+      style={{
+        ...card, padding: "40px 32px", background: "rgba(255,255,255,0.45)",
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 20,
+        maxWidth: 380, margin: "60px auto", width: "100%",
+      }}
+      aria-label="管理员登录"
+    >
+      <div style={{
+        width: 48, height: 48, borderRadius: 14, background: "rgba(110,190,175,0.1)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <Lock size={22} color={C.accent} />
+      </div>
+      <div style={{ textAlign: "center" }}>
+        <h2 style={{ fontSize: 20, fontWeight: 600, color: C.text, marginBottom: 4 }}>管理员登录</h2>
+        <p style={{ fontSize: 13, color: C.textMuted }}>请输入管理员账号和密码</p>
+      </div>
+      <form onSubmit={handleSubmit} style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+        <div>
+          <label style={labelStyle}>账号</label>
+          <input
+            style={inputStyle}
+            type="email"
+            value={email}
+            onChange={(e) => { setEmail(e.target.value); setError(""); }}
+            placeholder="输入邮箱"
+            autoComplete="username"
+          />
+        </div>
+        <div>
+          <label style={labelStyle}>密码</label>
+          <input
+            style={inputStyle}
+            type="password"
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setError(""); }}
+            placeholder="输入密码"
+            autoComplete="current-password"
+          />
+        </div>
+        {error && (
+          <div style={{ fontSize: 12, color: "#c07070", background: "rgba(200,100,100,0.08)", padding: "8px 12px", borderRadius: 8 }}>
+            {error}
+          </div>
+        )}
+        <button type="submit" style={{ ...btnBase, background: C.accent, color: "#fff", justifyContent: "center", padding: "10px 14px", marginTop: 4 }}>
+          <Lock size={14} />登录
+        </button>
+      </form>
+    </section>
+  );
+}
+
+function AdminPanel({ onLogout }: { onLogout: () => void }) {
   const cm = useContentManager();
   const [tab, setTab] = useState<Tab>("articles");
   const [editing, setEditing] = useState<string | null>(null);
@@ -93,6 +189,9 @@ export default function AdminPage() {
           <button onClick={handleReset} style={{ ...btnBase, background: "rgba(110,190,175,0.08)", color: C.textSec }}>
             <RotateCcw size={13} />重置
           </button>
+          <button onClick={onLogout} style={{ ...btnBase, background: "rgba(200,100,100,0.08)", color: "#c07070" }} title="退出登录">
+            <LogOut size={13} />退出
+          </button>
         </div>
       </div>
 
@@ -119,13 +218,11 @@ export default function AdminPage() {
         <div style={{ background: "rgba(255,255,255,0.5)", borderRadius: 16, padding: "20px 18px", display: "flex", flexDirection: "column", gap: 12, border: `1px solid rgba(110,190,175,0.12)` }}>
           <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginBottom: 4 }}>{editing ? "编辑" : "新增"}{isArticle ? "文章" : "项目"}</div>
 
-          {/* Title */}
           <div>
             <label style={labelStyle}>标题 *</label>
             <input style={inputStyle} value={form.title} onChange={(e) => set("title", e.target.value)} placeholder="输入标题" />
           </div>
 
-          {/* Emoji + Date */}
           <div style={{ display: "flex", gap: 10 }}>
             <div style={{ flex: "0 0 80px" }}>
               <label style={labelStyle}>Emoji</label>
@@ -137,7 +234,6 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {/* Article-specific fields */}
           {isArticle && (
             <>
               <div>
@@ -155,7 +251,6 @@ export default function AdminPage() {
             </>
           )}
 
-          {/* Project-specific fields */}
           {!isArticle && (
             <>
               <div>
@@ -179,13 +274,11 @@ export default function AdminPage() {
             </>
           )}
 
-          {/* URL */}
           <div>
             <label style={labelStyle}>链接（可选）</label>
             <input style={inputStyle} value={form.url ?? ""} onChange={(e) => set("url", e.target.value)} placeholder="https://..." />
           </div>
 
-          {/* Actions */}
           <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 4 }}>
             <button onClick={() => { setShowForm(false); setEditing(null); }} style={{ ...btnBase, background: "rgba(110,190,175,0.06)", color: C.textSec }}>
               <X size={14} />取消
@@ -231,4 +324,14 @@ export default function AdminPage() {
       </div>
     </section>
   );
+}
+
+export default function AdminPage() {
+  const { authed, login, logout } = useAuth();
+
+  if (!authed) {
+    return <LoginForm onLogin={login} />;
+  }
+
+  return <AdminPanel onLogout={logout} />;
 }
