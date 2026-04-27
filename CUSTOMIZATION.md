@@ -9,28 +9,32 @@
 ## 📁 项目结构
 
 ```
-origami00-wiki/
-├── index.html                          ← 站点名、meta 描述
-├── vite.config.ts                      ← Vite 构建配置
-├── package.json                        ← 依赖与脚本
-├── src/
-│   ├── main.tsx                        ← 路由入口
-│   ├── App.tsx                         ← 主组件（色彩、头像、时钟、布局）
-│   ├── index.css                       ← 全局样式（字体、滚动条、动画）
-│   ├── types/
-│   │   └── index.ts                    ← TypeScript 类型定义
-│   ├── data/
-│   │   └── siteData.ts                 ← ⭐ 集中数据层（所有可个性化内容）
-│   └── pages/
-│       ├── PhotoWallPage.tsx           ← 照片墙页面
-│       └── SubPage.tsx                 ← 通用子页面
+src/
+├── main.tsx                        ← 路由入口（嵌套路由 + 懒加载）
+├── tokens/
+│   └── design.ts                   ← ⭐ 设计令牌（色彩、卡片样式、图标映射）
+├── data/
+│   ├── siteData.ts                 ← ⭐ 集中数据层（个人信息、导航、音乐、照片）
+│   ├── articlesData.ts             ← 文章数据
+│   └── projectsData.ts             ← 项目数据
+├── types/
+│   └── index.ts                    ← TypeScript 类型定义
+├── hooks/
+│   ├── useClock.ts                 ← 时钟 + 问候语
+│   ├── useCalendar.ts              ← 日历导航
+│   └── useAudioPlayer.ts           ← 音频播放器
+├── components/                     ← 13 个独立组件
+├── layouts/
+│   └── MainLayout.tsx              ← 主布局（CSS + sidebar + Outlet）
+├── pages/                          ← 5 个页面组件
+└── index.css                       ← 全局样式（字体、滚动条、瀑布流）
 ```
 
 ---
 
 ## 🥇 核心数据层：`src/data/siteData.ts`
 
-这是最集中、最容易修改的文件，一个文件搞定大部分个性化。
+一个文件搞定大部分个性化内容。
 
 ### 1. 个人信息
 
@@ -54,20 +58,7 @@ export const socialLinks: SocialLink[] = [
     bg: "rgba(110,190,175,0.08)",        // 按钮背景色
     color: "#5a9e8f",                     // 图标颜色
   },
-  {
-    label: "Bilibili",
-    icon: "Tv",
-    href: "https://space.bilibili.com/",  // B站空间地址
-    bg: "rgba(110,190,175,0.06)",
-    color: "#6ebeaf",
-  },
-  {
-    label: "抖音",
-    icon: "Music2",
-    href: "https://www.douyin.com/",      // 抖音主页地址
-    bg: "rgba(110,190,175,0.08)",
-    color: "#5a9e8f",
-  },
+  // 可增删改条目
 ];
 ```
 
@@ -98,7 +89,7 @@ export const latestContent: ContentItem[] = [
 ];
 ```
 
-### 5. 音乐列表（模拟播放器，无真实音频）
+### 5. 音乐列表
 
 ```ts
 export const musicList: MusicTrack[] = [
@@ -108,40 +99,21 @@ export const musicList: MusicTrack[] = [
 ];
 ```
 
+音乐文件放置在 `public/Assets/音乐/` 目录下（mp3 格式），共 12 首。
+
 ### 6. 照片墙
 
 ```ts
 export const photoWallItems: PhotoWallItem[] = [
-  { title: "街头随拍", src: "https://picsum.photos/seed/origami-wall-1/720/520" },
-  { title: "晨间光影", src: "https://picsum.photos/seed/origami-wall-2/720/520" },
-  { title: "旅行片段", src: "https://picsum.photos/seed/origami-wall-3/720/520" },
-  { title: "城市色块", src: "https://picsum.photos/seed/origami-wall-4/720/520" },
-  { title: "猫咪日常", src: "https://picsum.photos/seed/origami-wall-5/720/520" },
-  { title: "自然风景", src: "https://picsum.photos/seed/origami-wall-6/720/520" },
+  { title: "街头随拍", src: "/Assets/照片墙资产/photo1.jpg" },
+  // 替换 src 为真实图片地址即可
 ];
-// 替换 src 为真实图片地址即可
 ```
 
 ### 7. 子页面内容
 
 ```ts
 export const subPageContent: Record<string, SubPageData> = {
-  "/articles": {
-    title: "我的文章",
-    description: "这里收录前端开发、AI 工具链与创作实践的文章目录。",
-    links: [
-      { label: "前端学习路线", href: "https://developer.mozilla.org/zh-CN/docs/Web" },
-      { label: "React 官方文档", href: "https://react.dev/" },
-    ],
-  },
-  "/projects": {
-    title: "我的项目",
-    description: "展示当前正在推进的网页、工具和小游戏项目。",
-    links: [
-      { label: "浏览开源趋势", href: "https://github.com/trending" },
-      { label: "Vite 项目模板", href: "https://vite.dev/guide/" },
-    ],
-  },
   "/about": {
     title: "关于网站",
     description: "这是一个基于 React 18+ 构建的个人站点，持续迭代中。",
@@ -150,80 +122,131 @@ export const subPageContent: Record<string, SubPageData> = {
       { label: "界面图标库", href: "https://lucide.dev/" },
     ],
   },
-  "/recommendations": {
-    title: "推荐分享",
-    description: "分享我常用的设计、开发与学习资源。",
-    links: [
-      { label: "Figma 社区", href: "https://www.figma.com/community" },
-      { label: "Awwwards 灵感", href: "https://www.awwwards.com/" },
-    ],
-  },
+  "/recommendations": { /* ... */ },
 };
 ```
 
 ---
 
-## 🥈 样式和组件：`src/App.tsx`
+## 🥈 文章与项目数据
 
-### 1. 色彩主题（第 34-45 行）
+### 文章：`src/data/articlesData.ts`
 
 ```ts
-const C: DesignTokens = {
+export const articles: Article[] = [
+  {
+    id: "1",
+    title: "React 18 新特性速览",
+    summary: "简要概述",
+    date: "2026-04-20",
+    tag: "前端",
+    emoji: "⚡",
+    content: "文章完整内容（Markdown 或纯文本）",
+    url: "https://react.dev/blog/2022/03/29/react-v18",  // 可选
+  },
+  // 可增删改条目
+];
+```
+
+### 项目：`src/data/projectsData.ts`
+
+```ts
+export const projects: Project[] = [
+  {
+    id: "1",
+    title: "origami00-wiki",
+    description: "项目描述",
+    date: "2026-04",
+    tags: ["React", "Vite", "TypeScript"],
+    emoji: "🐱",
+    status: "进行中",    // 进行中 / 已完成 / 暂停
+    url: "https://github.com/origami0/origami00-wiki",  // 可选
+  },
+  // 可增删改条目
+];
+```
+
+---
+
+## 🥉 设计令牌：`src/tokens/design.ts`
+
+修改色彩主题只需改这个文件，所有组件自动联动。
+
+### 色彩体系
+
+```ts
+export const C: DesignTokens = {
   accent: "#6ebeaf",              // 主色调（薄荷绿）
   accentDark: "#5a9e8f",          // hover 状态色
   accentBg: "rgba(110,190,175,0.08)",
   text: "#2d3a36",                // 主文字色
   textSec: "#6b8a80",             // 次级文字色
   textMuted: "#9db5ac",           // 辅助文字色
-  card: "rgba(255,255,255,0.55)", // 卡片背景（半透明毛玻璃）
+  card: "rgba(255,255,255,0.55)", // 卡片背景
   cardHover: "rgba(255,255,255,0.68)",
   shadow: "0 2px 16px rgba(100,160,145,0.06)",
   shadowHover: "0 8px 28px rgba(100,160,145,0.12)",
 };
 ```
 
-### 2. 头像（第 195-209 行）
+### 图标映射
 
-```tsx
-const Avatar = ({ size = 64 }: AvatarProps) => (
-  <div style={{
-    width: size, height: size, borderRadius: "50%",
-    background: "linear-gradient(145deg, #b8e6d8, #8dd0bc, #6ebeaf)",
-    // ...
-  }}>
-    😺   // 替换为你自己的头像 emoji 或图片
-  </div>
-);
+```ts
+export const iconMap: IconMap = {
+  Github: Code2, Tv, Music2, Home, FileText, Sparkles, Info, Heart,
+};
 ```
 
-### 3. 页面标题（第 610-617 行）
+---
+
+## 🔧 组件级自定义
+
+### 头像：`src/components/Avatar.tsx`
+
+```tsx
+// 修改头像图片路径
+const imgSrc = "/Assets/头像/youhuxiantiao.jpg";
+```
+
+将你的头像图片放入 `public/Assets/头像/` 目录，修改 `imgSrc` 路径即可。
+
+### 页面标题：`src/layouts/MainLayout.tsx`
 
 ```ts
 const pageTitleMap: PageTitleMap = {
   "/": "origami00-wiki",                      // 改成你的站点名
   "/photo-wall": "照片墙 - origami00-wiki",
   "/articles": "我的文章 - origami00-wiki",
-  "/projects": "我的项目 - origami00-wiki",
-  "/about": "关于网站 - origami00-wiki",
-  "/recommendations": "推荐分享 - origami00-wiki",
+  // ...
 };
 ```
 
-### 4. 问候语（第 85 行）
+### 问候语：`src/hooks/useClock.ts`
 
 ```ts
 const greeting = h < 12 ? "Good Morning" : h < 18 ? "Good Afternoon" : "Good Evening";
 // 可改为中文：早上好 / 下午好 / 晚上好
 ```
 
-### 5. 时区设置（第 68 行）
+### 时区设置：`src/hooks/useClock.ts`
 
 ```ts
-return new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
 // 480 = UTC+8（北京时间），改成你所在的时区偏移
+const utc8 = new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000);
 ```
 
-### 6. 标签颜色映射（第 472-477 行）
+### 状态徽章：`src/components/StatusBadge.tsx`
+
+```ts
+const m: Record<string, [string, string]> = {
+  online: ["#5cb89e", "在线"],
+  busy: ["#e07070", "忙碌"],
+  away: ["#d4b060", "离开"],
+  developing: ["#6ebeaf", "开发中"],
+};
+```
+
+### 标签颜色：`src/components/LatestContent.tsx`
 
 ```ts
 const tagColors: Record<string, { bg: string; color: string }> = {
@@ -234,18 +257,7 @@ const tagColors: Record<string, { bg: string; color: string }> = {
 };
 ```
 
-### 7. 状态徽章（第 177 行）
-
-```ts
-const m = {
-  online: ["#5cb89e", "在线"],
-  busy: ["#e07070", "忙碌"],
-  away: ["#d4b060", "离开"],
-  developing: ["#6ebeaf", "开发中"],
-};
-```
-
-### 8. 猫咪插画 SVG（第 211-242 行）
+### 猫咪插画：`src/components/CatSitting.tsx`
 
 | 部位 | 颜色 |
 |------|------|
@@ -254,17 +266,16 @@ const m = {
 | 耳朵内 | `#ffb6b9`（粉色） |
 | 眼睛 | `#2d3436` |
 | 鼻子 | `#ffb6b9` |
-| 腮红 | `#ffb6b9` opacity 0.18 |
 | 蝴蝶结 | `#ffd93d`（黄色）+ `#ff6b6b`（红色装饰） |
 
 ---
 
-## 🥉 HTML 层：`index.html`
+## 🔧 HTML 层：`index.html`
 
 | 修改项 | 当前值 | 说明 |
 |--------|--------|------|
 | `<title>` | `origami00-wiki` | 站点名称，显示在浏览器标签页 |
-| `<meta description>` | `origami00-wiki 个人站，包含文章、项目、照片墙与个人推荐内容。` | 搜索引擎描述 |
+| `<meta description>` | `origami00-wiki 个人站...` | 搜索引擎描述 |
 
 ---
 
@@ -275,13 +286,12 @@ const m = {
 | 字体 | Inter + Noto Sans SC | Google Fonts 在线字体，可替换 |
 | 滚动条颜色 | `rgba(110, 190, 175, 0.35)` | 浏览器滚动条滑块色 |
 | 瀑布流列数 | `column-count: 2` | 首页卡片瀑布流列数 |
-| 进度条颜色 | `#6ebeaf` | 音乐播放器滑块色 |
 
 ---
 
 ## 📝 TypeScript 类型：`src/types/index.ts`
 
-项目使用 TypeScript，所有数据结构都有类型定义。如果需要新增数据字段，需同步更新类型：
+所有数据结构都有类型定义。新增数据字段时需同步更新：
 
 | 类型名 | 用途 |
 |--------|------|
@@ -291,6 +301,8 @@ const m = {
 | `ContentItem` | 最新动态条目（title, date, tag, emoji, url） |
 | `MusicTrack` | 音乐曲目（title, artist, duration） |
 | `PhotoWallItem` | 照片墙条目（title, src） |
+| `Article` | 文章（id, title, summary, date, tag, emoji, content, url?） |
+| `Project` | 项目（id, title, description, date, tags, emoji, status, url?） |
 | `SubPageData` | 子页面数据（title, description, links） |
 | `DesignTokens` | 色彩主题令牌 |
 | `CardStyle` | 卡片样式 |
@@ -302,8 +314,10 @@ const m = {
 | 优先级 | 文件 | 修改内容 |
 |--------|------|----------|
 | **最高** | `src/data/siteData.ts` | 名字、简介、社交链接、动态、照片、音乐、子页面 |
-| **高** | `src/App.tsx` | 色彩主题、头像、页面标题、问候语 |
+| **最高** | `src/data/articlesData.ts` | 文章内容 |
+| **最高** | `src/data/projectsData.ts` | 项目内容 |
+| **高** | `src/tokens/design.ts` | 色彩主题 |
 | **高** | `src/types/index.ts` | 新增字段时同步类型定义 |
 | **中** | `index.html` | 站点名、meta description |
 | **中** | `src/index.css` | 字体、滚动条、布局列数 |
-| **低** | `src/App.tsx` | 猫咪 SVG 颜色、时区偏移、标签配色 |
+| **低** | `src/components/` | 头像图片、猫咪颜色、标签配色、问候语 |

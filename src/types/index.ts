@@ -81,3 +81,25 @@ export type IconMap = Record<string, LucideIcon>;
 export type PageTitleMap = Record<string, string>;
 
 export type SubPageIcons = Record<string, LucideIcon>;
+
+export interface Article {
+  id: string;
+  title: string;
+  summary: string;
+  date: string;
+  tag: string;
+  emoji: string;
+  content: string;
+  url?: string;
+}
+
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  tags: string[];
+  emoji: string;
+  status: "进行中" | "已完成" | "暂停";
+  url?: string;
+}

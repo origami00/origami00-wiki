@@ -13,117 +13,84 @@
 - [x] **集成真实资产** — 迁移 Assets/ 到 public/，Avatar 使用真实头像，SocialLinks 使用自定义图标+真实 URL，PhotoWall 使用真实照片
 - [x] **真实音频播放器** — useAudioPlayer 重写为 `<audio>` 元素，12 首 mp3 文件
 - [x] **移动端响应式增强** — 新增 ≤480px 断点，覆盖 6 个组件的移动端适配
+- [x] **组件拆分 + 路由重构** — App.tsx 893 行拆分为 21 个模块，嵌套路由 + MainLayout + Outlet
+- [x] **文章/项目展示页** — ArticlesPage（列表+详情）、ProjectsPage（卡片+状态标签）
+- [x] **页面切换过渡动画** — PageTransition 组件，淡入 0.3s / 淡出 0.2s
+- [x] **组件懒加载** — React.lazy + Suspense，所有页面按需加载，构建产物拆分为 11 个 chunk
+- [x] **单元测试** — Vitest + React Testing Library，26 个测试文件，136 个测试用例
 
 ---
 
-## Phase 2：组件拆分 + 路由重构 + 样式统一
+## Phase 5.1：测试覆盖率提升
 
-**复杂度：XL | 风险：高 | 预估：4-5天**
+**复杂度：M | 风险：低 | 预估：2-3天**
 
-### 1. 提取设计令牌和工具函数
-- 创建 `src/tokens/design.ts` — 导出 `C`（颜色）和 `card`（基础卡片样式）
-- 创建 `src/utils/format.ts` — 提取 `fmt()` 时间格式化函数
-- 创建 `src/utils/icons.ts` — 提取 `iconMap` 映射
-- **为什么**：为组件拆分提供共享依赖
+### 1. 增加边界用例
+- useAudioPlayer：测试 `ended` 事件自动切歌、`play()` 拒绝时回退
+- useCalendar：测试跨年（12月→1月）导航
+- ArticlesPage：测试文章无 url 时的渲染
+- SubPage：测试所有 4 个子路由路径
 
-### 2. 提取自定义 Hooks
-- `src/hooks/useClock.ts`（~25行）
-- `src/hooks/useCalendar.ts`（~25行）
-- `src/hooks/useAudioPlayer.ts`（~40行，Phase 3 会重写）
-- **为什么**：逻辑与 UI 分离，便于独立测试
+### 2. 增加集成测试
+- MainLayout + 嵌套路由的端到端渲染
+- 从首页点击猫咪卡片 → 照片墙页面的导航流程
+- 从侧边栏导航到文章页 → 点击文章 → 查看详情 → 返回
 
-### 3. 拆分组件（按依赖从少到多）
-- 原子组件：StatusBadge, Avatar, CatSitting
-- 卡片组件：ProfileCard, ClockCard, CatCard, SocialLinks, CalendarCard, LatestContent, MusicPlayer
-- 布局组件：UserSidebar
-- **为什么**：每个文件 ≤200 行，便于维护
-
-### 4. 样式体系统一
-- 从 App.tsx `<style>{}` 标签提取为独立 CSS 文件：
-  - `src/styles/animations.css` — keyframe 动画
-  - `src/styles/layout.css` — grid 布局
-  - `src/styles/responsive.css` — 媒体查询
-  - `src/styles/components.css` — sidebar、photo wall 等
-- **为什么**：消除内联样式中的 `!important`，提升可维护性
-
-### 5. 路由重构
-- 创建 `src/layouts/MainLayout.tsx` — 抽象 grid + sidebar + `<Outlet />`
-- 重构 `src/main.tsx`：使用嵌套路由 + `React.lazy` 懒加载
-- 创建 `src/pages/HomePage.tsx` — 从 App.tsx 提取首页逻辑
-- App.tsx 精简为路由壳（~30行）
-- **为什么**：当前所有路由渲染同一组件，违背 React Router 设计初衷
+### 3. 快照测试
+- 关键组件的渲染快照（ProfileCard、MusicPlayer、CalendarCard）
 
 ---
 
-## Phase 3：功能开发
+## Phase 6：体验增强（可选）
 
-**复杂度：XL | 风险：中 | 预估：5-7天**
+**复杂度：L | 风险：低 | 预估：3-5天**
 
-### 6. 真实音频播放器 ✅
-- 重写 `useAudioPlayer` hook：使用 `<audio>` 元素替代 `setInterval`
-- MusicPlayer 组件更新：自定义进度条拖拽（onMouseDown/onTouchStart）
-- 在 `public/audio/` 放置 3 个 mp3 文件
-- **验证点**：播放控制可点击并产生音频输出，进度条拖拽定位误差 ≤1秒
+### 4. 暗色模式
+- 创建暗色主题的 `C` 和 `card` 对象
+- 使用 CSS `prefers-color-scheme` 媒体查询
+- 添加主题切换按钮
 
-### 7. 文章/项目展示页
-- 创建 `src/data/articlesData.ts` — 至少 3 篇示例文章数据
-- 创建 `src/data/projectsData.ts` — 至少 3 个示例项目数据
-- 新增 `src/pages/ArticlesPage.tsx` 和 `src/pages/ProjectsPage.tsx`
-- 新增组件：ArticleCard, ArticleDetail, ProjectCard, ProjectDetail, SkeletonCard, TagBadge
-- **验证点**：页面加载后展示 ≥3 个卡片，点击可查看详情
+### 5. Favicon + SEO
+- 设置 favicon（猫咪 SVG 或 PNG）
+- 添加 Open Graph meta 标签
+- 添加结构化数据（JSON-LD）
 
----
-
-## Phase 4：体验优化
-
-**复杂度：L | 风险：中 | 预估：3-4天**
-
-### 8. 移动端响应式增强 ✅
-- 新增 `@media (max-width: 480px)` 断点
-- 移除 SubPage 中硬编码的 `min-height: 500px`
-- **验证点**：320px-768px 宽度下布局完整无溢出
-
-### 9. 页面切换过渡动画
-- MainLayout 中实现淡入/滑出效果，总时长 ≤300ms
-- **验证点**：路由切换时出现动画效果
-
-### 10. 组件懒加载
-- 创建 `useIntersectionObserver` hook
-- 非首屏卡片滚动靠近时才渲染
-- **验证点**：首屏渲染时间 ≤2秒（3G 模拟）
-
----
-
-## Phase 5：测试
-
-**复杂度：M | 风险：低 | 预估：3-4天**
-
-### 11. 添加单元测试
-- 安装 Vitest + React Testing Library
-- 覆盖：utils/format.ts、useClock、useCalendar、useAudioPlayer、MusicPlayer、LatestContent
-- **验证点**：覆盖率 ≥80%，测试全部通过
+### 6. 部署配置
+- Vercel / Netlify / GitHub Pages 配置
+- 自定义域名
 
 ---
 
 ## 检查清单
 
 ```
-Phase 2:
-- [ ] 提取设计令牌和工具函数
-- [ ] 提取自定义 Hooks
-- [ ] 拆分组件（11 个文件）
-- [ ] 样式体系统一
-- [ ] 路由重构
+Phase 2: 组件拆分 + 路由重构
+- [x] 提取设计令牌和工具函数
+- [x] 提取自定义 Hooks
+- [x] 拆分组件（13 个组件文件）
+- [x] 创建 MainLayout + PageTransition
+- [x] 路由重构（嵌套路由 + React.lazy）
 
-Phase 3:
+Phase 3: 功能开发
 - [x] 真实音频播放器
-- [ ] 文章/项目展示页
+- [x] 文章/项目展示页
 
-Phase 4:
+Phase 4: 体验优化
 - [x] 移动端响应式增强
-- [ ] 页面切换过渡动画
-- [ ] 组件懒加载
+- [x] 页面切换过渡动画
+- [x] 组件懒加载
 
-Phase 5:
-- [ ] 添加单元测试
+Phase 5: 测试
+- [x] 安装 Vitest + React Testing Library
+- [x] 数据层测试（siteData, articlesData, projectsData）
+- [x] 设计令牌测试（tokens/design）
+- [x] Hook 测试（useClock, useCalendar, useAudioPlayer）
+- [x] 组件测试（13 个组件）
+- [x] 页面测试（5 个页面 + MainLayout）
+- [ ] 覆盖率提升至 ≥90%
+
+Phase 6: 体验增强（可选）
+- [ ] 暗色模式
+- [ ] Favicon + SEO
+- [ ] 部署配置
 ```

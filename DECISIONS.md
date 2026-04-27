@@ -34,13 +34,12 @@
 
 ---
 
-## D003 — 单文件组件架构
+## D003 — 单文件组件架构 → 已废弃
 
-- **日期**：项目初始阶段
-- **决策**：所有组件、Hooks、样式定义集中在 `App.jsx` 一个文件（760 行）
-- **理由**：个人主页规模小（6 个文件 1121 行源码），单文件便于快速开发和全局把控
-- **已知代价**：随着功能增长，维护难度增加；不利于团队协作；不利于代码复用
-- **影响**：后续扩展时需要考虑拆分（已列入 Phase 2 计划）
+- **日期**：项目初始阶段（已重构 2026-04-27）
+- **决策**：初始阶段所有组件集中在 App.jsx，后拆分为独立模块
+- **重构结果**：App.tsx 893 行 → 21 个独立模块，最大文件 MainLayout.tsx ~160 行
+- **影响**：已解决，参见 D018
 
 ---
 
@@ -78,29 +77,29 @@
 ## D007 — UTC+8 时区强制
 
 - **日期**：项目初始阶段
-- **决策**：时钟组件使用 `toLocaleString` + 时区参数强制 UTC+8，而非依赖浏览器本地时区
+- **决策**：时钟组件使用 `getTimezoneOffset() + 480` 强制 UTC+8，而非依赖浏览器本地时区
 - **理由**：网站所有者在北京时区，无论访问者在哪都需要显示北京时间
 - **影响**：需要额外的时区转换逻辑
 
 ---
 
-## D008 — 模拟音乐播放器
+## D008 — 真实音频播放器
 
-- **日期**：项目初始阶段
-- **决策**：音乐播放器使用 `setInterval` 模拟进度，不加载真实音频文件
-- **理由**：初始阶段快速实现 UI 原型，避免音频文件管理和 Web Audio API 的复杂度
-- **已知代价**：功能仅为 UI 展示，无真实播放能力
-- **影响**：Phase 3 将用 `<audio>` 元素替换为真实音频播放
+- **日期**：2026-04-27（Phase 3）
+- **决策**：音乐播放器使用 `<audio>` 元素播放真实 mp3 文件
+- **理由**：12 首 mp3 文件已放置在 `public/Assets/音乐/`，HTML5 Audio API 直接支持
+- **影响**：进度条拖拽、自动切歌、播放/暂停均已实现
 
 ---
 
-## D009 — 所有路由渲染同一组件
+## D009 — 嵌套路由架构
 
-- **日期**：项目初始阶段
-- **决策**：路由配置中所有路径都渲染 `<App />`，内部通过 `useLocation().pathname` 判断显示内容
-- **理由**：共享侧边导航和全局布局，避免在每个页面重复包裹 Layout 组件
-- **已知代价**：路由切换时整个 App 组件重新渲染，而非仅切换内容区域
-- **影响**：Phase 2 将重构为嵌套路由 + MainLayout 架构
+- **日期**：2026-04-27（Phase 2 重构）
+- **决策**：从扁平路由 + 单组件切换重构为嵌套路由 + MainLayout + Outlet
+- **重构前**：所有路由渲染同一个 `<App />`，内部通过 `useLocation().pathname` 判断
+- **重构后**：`MainLayout` 包含侧边栏 + `<Outlet />`，每个页面独立组件
+- **理由**：React Router 的设计初衷是嵌套路由，重构后页面切换只更新内容区域，性能更优
+- **影响**：`App.tsx` 精简为空壳，`main.tsx` 配置嵌套路由表
 
 ---
 
@@ -108,17 +107,7 @@
 
 - **日期**：2026-04-27（Phase 1.2）
 - **决策**：将所有 `.jsx`/`.js` 文件迁移为 `.tsx`/`.ts`，启用 strict 模式
-- **备选方案**：
-  - 保持 JavaScript — 无类型检查，重构时风险高
-  - 渐进式 JSDoc 类型注解 — 不够严格，IDE 支持弱
-- **理由**：Phase 2 需要大规模组件拆分，TypeScript 类型系统能在拆分过程中捕获错误；strict 模式确保代码质量
-- **实施**：
-  - 安装 `typescript`、`@types/react`、`@types/react-dom`
-  - 创建 `tsconfig.json`（strict 模式，react-jsx）
-  - 创建 `src/types/index.ts` 定义全部接口（Profile, SocialLink, MusicTrack 等）
-  - 创建 `src/vite-env.d.ts` 提供 Vite 类型声明
-  - 所有文件重命名：`vite.config.js` → `.ts`，`main.jsx` → `.tsx`，`App.jsx` → `.tsx`，`siteData.js` → `.ts`
-  - 为所有组件 props、hooks 返回值、工具函数添加类型注解
+- **理由**：Phase 2 需要大规模组件拆分，TypeScript 类型系统能在拆分过程中捕获错误
 - **影响**：`tsc --noEmit` 无报错，IDE 智能提示完整
 
 ---
@@ -127,12 +116,6 @@
 
 - **日期**：2026-04-27（Phase 1.3）
 - **决策**：使用 ESLint flat config + Prettier，与 TypeScript 集成
-- **实施**：
-  - 安装 `eslint`、`@eslint/js`、`typescript-eslint`、`prettier`、`eslint-config-prettier`、`eslint-plugin-react-hooks`
-  - 创建 `eslint.config.js`（flat config 格式）
-  - 创建 `.prettierrc`（semi: true, singleQuote: false, printWidth: 100）
-  - 添加 scripts：`lint`、`lint:fix`、`format`
-  - 更新 `build` 脚本为 `tsc --noEmit && vite build`
 - **影响**：`npm run lint` 无报错，代码格式统一
 
 ---
@@ -140,13 +123,9 @@
 ## D012 — 音频数据源：本地 mp3 文件
 
 - **日期**：2026-04-27
-- **决策**：音乐播放器先用本地 mp3 文件测试，不对接网易云 API
-- **备选方案**：
-  - 对接网易云非官方 API — 需要后端代理，存在被封 IP 风险
-  - 使用公开免费音频源 — 音质和稳定性不可控
-  - 保持模拟播放 — 功能不完整
+- **决策**：音乐播放器使用本地 mp3 文件，不对接网易云 API
 - **理由**：个人主页项目无后端服务，本地 mp3 是最简单可靠的方案
-- **影响**：在 `public/Assets/音乐/` 放置 mp3 文件，前端 `<audio>` 直接播放
+- **影响**：在 `public/Assets/音乐/` 放置 12 个 mp3 文件
 
 ---
 
@@ -154,8 +133,8 @@
 
 - **日期**：2026-04-27
 - **决策**：暂不实现动态数据拉取，保持 `siteData.ts` 静态数据
-- **理由**：无已部署的后端服务，前端先实现 UI 和交互，后续有 API 时再接入
-- **影响**：LatestContent 等组件保持静态数据，不新增 useFetch hook 和 API 层
+- **理由**：无已部署的后端服务，前端先实现 UI 和交互
+- **影响**：所有数据组件保持静态数据
 
 ---
 
@@ -163,8 +142,7 @@
 
 - **日期**：2026-04-27
 - **决策**：文章/项目展示页先用示例数据搭建，后续替换为真实内容
-- **理由**：页面结构和组件优先，内容可随时替换
-- **影响**：创建 `articlesData.ts` 和 `projectsData.ts`，包含 3 篇示例文章和 3 个示例项目
+- **影响**：创建 `articlesData.ts`（3 篇文章）和 `projectsData.ts`（3 个项目）
 
 ---
 
@@ -172,30 +150,80 @@
 
 - **日期**：2026-04-27
 - **决策**：将 `Assets/` 从项目根目录移动到 `public/Assets/`，通过 `/Assets/...` 路径直接访问
-- **备选方案**：
-  - 使用 Vite 的 `import` 导入 — 会被打包和 hash，路径不可预测
-  - 保持在项目根目录 — Vite 不提供根目录的静态服务
-  - 使用 `src/assets/` — 同样会被 Vite 打包处理
-- **理由**：`public/` 目录下的文件由 Vite 直接提供静态服务，不做打包处理，适合大型媒体文件
-- **影响**：所有资产路径以 `/Assets/` 开头，浏览器直接请求，无打包开销
+- **理由**：`public/` 目录下的文件由 Vite 直接提供静态服务，适合大型媒体文件
+- **影响**：所有资产路径以 `/Assets/` 开头
 
 ---
 
 ## D016 — 社交链接使用自定义图标
 
 - **日期**：2026-04-27
-- **决策**：社交链接图标从 Lucide 通用图标改为自定义 PNG 图片（GitHub/Bilibili/抖音 logo）
-- **理由**：品牌图标辨识度更高，用户已提供官方 logo 文件
-- **影响**：`SocialLink` 类型新增 `iconSrc?: string` 字段，SocialLinks 组件支持条件渲染 `<img>` 或 Lucide 图标
+- **决策**：社交链接图标从 Lucide 通用图标改为自定义 PNG 图片
+- **影响**：`SocialLink` 类型新增 `iconSrc?: string` 字段
 
 ---
 
 ## D017 — 音乐播放器仅使用 mp3 格式
 
 - **日期**：2026-04-27
-- **决策**：排除 `.flac` 和 `.aac` 格式音频文件，仅保留 `.mp3`（共 12 首）
-- **理由**：HTML5 `<audio>` 对 FLAC/AAC 的浏览器兼容性不佳，mp3 是最安全的跨浏览器选择
-- **影响**：丢弃 1 个 FLAC 和 1 个 AAC 文件，`musicList` 数据源仅包含 mp3 路径
+- **决策**：排除 `.flac` 和 `.aac` 格式，仅保留 `.mp3`（共 12 首）
+- **理由**：HTML5 `<audio>` 对 FLAC/AAC 的浏览器兼容性不佳
+
+---
+
+## D018 — 组件拆分架构
+
+- **日期**：2026-04-27（Phase 2）
+- **决策**：将 App.tsx 893 行拆分为 21 个独立模块
+- **拆分方案**：
+  - `tokens/design.ts` — 设计令牌 `C`、`card`、`iconMap`
+  - `hooks/` — `useClock`、`useCalendar`、`useAudioPlayer`
+  - `components/` — 13 个组件（含 PageTransition + LoadingFallback）
+  - `layouts/MainLayout.tsx` — 布局壳 + `<Outlet />` + 全部 CSS
+  - `pages/HomePage.tsx` — 首页瀑布流组合
+- **理由**：单文件 893 行维护困难，拆分后每个模块 ≤160 行，便于定位和修改
+- **影响**：所有组件从 tokens 和 hooks 导入依赖，不再通过 props 传递设计令牌
+
+---
+
+## D019 — 页面过渡动画方案
+
+- **日期**：2026-04-27（Phase 4）
+- **决策**：使用纯 CSS @keyframes + `useLocation().key` 触发，不引入动画库
+- **备选方案**：
+  - Framer Motion — 增加依赖，与项目轻量定位不符
+  - react-transition-group — 增加依赖
+  - GSAP — 过于重量级
+- **实现**：`PageTransition` 组件检测 `location.key` 变化，先播放 exit 动画（200ms），再播放 enter 动画（300ms）
+- **影响**：页面切换有淡入/淡出效果，无额外依赖
+
+---
+
+## D020 — 测试框架选型
+
+- **日期**：2026-04-27（Phase 5）
+- **决策**：使用 Vitest + React Testing Library + jsdom
+- **备选方案**：
+  - Jest — 需要额外配置 ESM 支持，与 Vite 集成不如 Vitest
+  - Cypress — E2E 测试框架，对当前项目过于重量级
+- **理由**：Vitest 与 Vite 原生集成，零配置支持 TypeScript/ESM/JSX；React Testing Library 鼓励测试用户行为而非实现细节
+- **实施**：
+  - 安装 `vitest`、`@testing-library/react`、`@testing-library/jest-dom`、`@testing-library/user-event`、`jsdom`
+  - `vite.config.ts` 添加 `test` 配置
+  - `src/test/setup.ts` 初始化 jest-dom matchers
+  - `src/test/renderWithRouter.tsx` 路由测试辅助函数
+- **影响**：26 个测试文件，136 个测试用例，`npm run test` 全部通过
+
+---
+
+## D021 — 懒加载策略
+
+- **日期**：2026-04-27（Phase 2/4）
+- **决策**：使用 `React.lazy()` + `Suspense` 对所有页面组件进行路由级懒加载
+- **理由**：Vite 原生支持 `import()` 动态导入，React.lazy 无需额外依赖
+- **影响**：构建产物从单个 205KB 文件拆分为 11 个 chunk，首屏只加载 MainLayout + HomePage
+
+---
 
 ## 决策模板
 
