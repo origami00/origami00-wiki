@@ -90,35 +90,112 @@ export default function MainLayout() {
 
         .catCard { transition: transform .28s ease, box-shadow .28s ease; }
 
-        .photoWallGrid {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr));
-          gap: 14px;
-        }
-        .photoWallItem {
-          margin: 0;
-          overflow: hidden;
-          border-radius: 16px;
-          background: rgba(255,255,255,0.5);
-          box-shadow: 0 2px 12px rgba(100,160,145,0.06);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .photoWallItem:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 24px rgba(100,160,145,0.12);
-        }
-        .photoWallItem img {
+        .photoCover {
           width: 100%;
-          height: 170px;
+          max-height: 340px;
+          object-fit: cover;
+          border-radius: 16px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .polaroidGrid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+          justify-content: center;
+          padding: 20px 10px;
+        }
+        .polaroidCard {
+          margin: 0;
+          padding: 10px 10px 0;
+          background: rgba(255,255,255,0.85);
+          border-radius: 4px;
+          box-shadow: 0 3px 15px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08);
+          cursor: pointer;
+          transform: rotate(var(--rot, 0deg));
+          transition: transform 0.35s cubic-bezier(.25,.46,.45,.94), box-shadow 0.35s ease;
+          flex: 0 0 auto;
+          width: 200px;
+        }
+        .polaroidCard:hover {
+          transform: rotate(0deg) scale(1.08);
+          box-shadow: 0 12px 35px rgba(0,0,0,0.18), 0 4px 12px rgba(0,0,0,0.1);
+          z-index: 10;
+        }
+        .polaroidCard img {
+          width: 100%;
+          height: 180px;
           object-fit: cover;
           display: block;
+          border-radius: 2px;
         }
-        .photoWallItem figcaption {
-          padding: 10px 12px;
-          font-size: 12.5px;
+        .polaroidCard figcaption {
+          padding: 10px 4px 12px;
+          font-size: 12px;
           color: ${C.textSec};
+          text-align: center;
           font-weight: 400;
         }
+
+        .lightboxOverlay {
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          background: rgba(0,0,0,0.88);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          animation: lbFadeIn 0.25s ease;
+        }
+        .lightboxOverlay img {
+          max-width: 90vw;
+          max-height: 80vh;
+          object-fit: contain;
+          border-radius: 6px;
+          box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+        }
+        .lightboxClose {
+          position: absolute;
+          top: 20px;
+          right: 24px;
+          background: none;
+          border: none;
+          color: #fff;
+          font-size: 36px;
+          cursor: pointer;
+          opacity: 0.8;
+          transition: opacity 0.2s;
+          line-height: 1;
+        }
+        .lightboxClose:hover { opacity: 1; }
+        .lightboxCaption {
+          color: rgba(255,255,255,0.8);
+          font-size: 14px;
+          margin-top: 14px;
+        }
+        .lightboxNav {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(255,255,255,0.15);
+          border: none;
+          color: #fff;
+          font-size: 28px;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          cursor: pointer;
+          transition: background 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
+        }
+        .lightboxNav:hover { background: rgba(255,255,255,0.3); }
+        .lightboxNavPrev { left: 20px; }
+        .lightboxNavNext { right: 20px; }
+        @keyframes lbFadeIn { from { opacity: 0 } to { opacity: 1 } }
 
         .pageTransition.enter { animation: pageEnter 0.3s ease forwards; }
         .pageTransition.exit { animation: pageExit 0.2s ease forwards; }
@@ -159,15 +236,17 @@ export default function MainLayout() {
             font-size: 12.5px !important;
           }
           .masonryColumns { column-count: 1 !important; }
-          .photoWallGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .polaroidCard { width: 160px; }
+          .polaroidCard img { height: 150px; }
         }
 
         @media (max-width: 520px) {
           .layoutGrid { gap: 10px; }
           .masonryColumns { column-gap: 10px; }
           .masonryColumns > * { margin-bottom: 10px; }
-          .photoWallGrid { grid-template-columns: 1fr; }
-          .photoWallItem img { height: 190px; }
+          .polaroidGrid { gap: 14px; padding: 14px 6px; }
+          .polaroidCard { width: 140px; }
+          .polaroidCard img { height: 130px; }
         }
 
         @media (max-width: 480px) {

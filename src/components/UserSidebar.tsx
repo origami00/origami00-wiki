@@ -16,10 +16,10 @@ export default function UserSidebar() {
         background: "rgba(255,255,255,0.4)",
       }}
     >
-      <div className="sideProfile" style={{ textAlign: "center", marginBottom: 16 }}>
+      <div className="sideProfile" style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 16 }}>
         <Avatar size={48} />
-        <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginTop: 8, letterSpacing: "0.02em" }}>{profile.name}</div>
-        <div style={{ marginTop: 5 }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: C.text, marginTop: 6, letterSpacing: "0.02em" }}>{profile.name}</div>
+        <div style={{ marginTop: 4 }}>
           <StatusBadge status={profile.status} />
         </div>
       </div>

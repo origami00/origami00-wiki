@@ -1,8 +1,8 @@
 import type { ContentItem, MusicTrack, NavItem, PhotoWallItem, Profile, SocialLink, SubPageData } from "../types";
 
 export const profile: Profile = {
-  name: "小猫咪",
-  bio: "全栈开发 · 插画爱好者 · 游戏设计探索中",
+  name: "Origami00",
+  bio: "ai短片 · 绘画 · 游戏开发探索中",
   status: "developing",
   location: "中国",
 };
@@ -89,12 +89,15 @@ export const musicList: MusicTrack[] = [
 ];
 
 export const photoWallItems: PhotoWallItem[] = [
-  { title: "白猫美猫", src: "/Assets/照片墙资产/baimaomeimo.jpg" },
-  { title: "北京", src: "/Assets/照片墙资产/beijin.jpg" },
-  { title: "北京", src: "/Assets/照片墙资产/beijin2.jpg" },
+  { title: "封面", src: "/Assets/照片墙资产/23417_86777360146.jpg" },
+  { title: "插画1", src: "/Assets/照片墙资产/baimaomeimo.jpg" },
+  { title: "风格参考", src: "/Assets/照片墙资产/fenggecankao.jpg" },
+  { title: "房间布局", src: "/Assets/照片墙资产/beijin.jpg" },
+  { title: "背景", src: "/Assets/照片墙资产/beijin2.jpg" },
   { title: "花卉", src: "/Assets/照片墙资产/flower-9294773_1280.webp" },
   { title: "随拍", src: "/Assets/照片墙资产/12342_22260975244.jpg" },
-  { title: "随拍", src: "/Assets/照片墙资产/280518dc-3ccf-485e-aa44-52e6a7c54f99.webp" },
+  { title: "插画2", src: "/Assets/照片墙资产/280518dc-3ccf-485e-aa44-52e6a7c54f99.webp" },
+  { title: "线稿", src: "/Assets/照片墙资产/youhuxiantiao.jpg" },
 ];
 
 export const subPageContent: Record<string, SubPageData> = {

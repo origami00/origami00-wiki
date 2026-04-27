@@ -1,9 +1,36 @@
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { C, card } from "../tokens/design";
 import { photoWallItems } from "../data/siteData";
 
+const rotations = [-4, 2, -2, 3, -1, 4, -3, 1, -2];
+
 export default function PhotoWallPage() {
   const navigate = useNavigate();
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  const closeLightbox = useCallback(() => setLightboxIdx(null), []);
+
+  const goPrev = useCallback(() => {
+    setLightboxIdx((i) => (i !== null ? (i - 1 + photoWallItems.length) % photoWallItems.length : null));
+  }, []);
+
+  const goNext = useCallback(() => {
+    setLightboxIdx((i) => (i !== null ? (i + 1) % photoWallItems.length : null));
+  }, []);
+
+  useEffect(() => {
+    if (lightboxIdx === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") goPrev();
+      if (e.key === "ArrowRight") goNext();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [lightboxIdx, closeLightbox, goPrev, goNext]);
+
+  const cover = photoWallItems[0]!;
 
   return (
     <section
@@ -21,7 +48,7 @@ export default function PhotoWallPage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
         <div>
           <h2 style={{ fontSize: 22, fontWeight: 600, color: C.text, marginBottom: 4, letterSpacing: "0.01em" }}>照片墙</h2>
-          <p style={{ fontSize: 12.5, color: C.textMuted }}>收藏生活片段，点击可替换为你的真实图片地址。</p>
+          <p style={{ fontSize: 12.5, color: C.textMuted }}>收藏生活片段，点击照片可查看大图。</p>
         </div>
         <button
           onClick={() => navigate("/")}
@@ -39,14 +66,62 @@ export default function PhotoWallPage() {
           返回首页
         </button>
       </div>
-      <div className="photoWallGrid">
-        {photoWallItems.map((item, index) => (
-          <figure key={item.title + index} className="photoWallItem">
+
+      {/* 封面大图 */}
+      <img
+        className="photoCover"
+        src={cover.src}
+        alt={cover.title}
+        onClick={() => setLightboxIdx(0)}
+        style={{ cursor: "pointer" }}
+      />
+
+      {/* 拍立得散落网格 */}
+      <div className="polaroidGrid">
+        {photoWallItems.map((item, i) => (
+          <figure
+            key={item.title + i}
+            className="polaroidCard"
+            style={{ "--rot": `${rotations[i % rotations.length]}deg` } as React.CSSProperties}
+            onClick={() => setLightboxIdx(i)}
+          >
             <img src={item.src} alt={item.title} loading="lazy" />
             <figcaption>{item.title}</figcaption>
           </figure>
         ))}
       </div>
+
+      {/* 灯箱 */}
+      {lightboxIdx !== null && (() => {
+        const current = photoWallItems[lightboxIdx]!;
+        return (
+          <div
+            className="lightboxOverlay"
+            onClick={(e) => { if (e.target === e.currentTarget) closeLightbox(); }}
+          >
+            <button className="lightboxClose" onClick={closeLightbox} aria-label="关闭预览">
+              &times;
+            </button>
+            <button className="lightboxNav lightboxNavPrev" onClick={(e) => { e.stopPropagation(); goPrev(); }} aria-label="上一张">
+              &#8249;
+            </button>
+            <img
+              src={current.src}
+              alt={current.title}
+              onClick={(e) => e.stopPropagation()}
+            />
+            <div className="lightboxCaption">
+              {current.title}
+              <span style={{ opacity: 0.5, marginLeft: 8, fontSize: 12 }}>
+                {lightboxIdx + 1} / {photoWallItems.length}
+              </span>
+            </div>
+            <button className="lightboxNav lightboxNavNext" onClick={(e) => { e.stopPropagation(); goNext(); }} aria-label="下一张">
+              &#8250;
+            </button>
+        </div>
+        );
+      })()}
     </section>
   );
 }
