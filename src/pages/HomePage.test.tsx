@@ -20,7 +20,7 @@ describe("HomePage", () => {
 
   it("renders cat card", () => {
     renderWithRouter(<HomePage />);
-    expect(screen.getByText("进入照片墙")).toBeInTheDocument();
+    expect(screen.getByLabelText("照片墙")).toBeInTheDocument();
   });
 
   it("renders calendar card", () => {

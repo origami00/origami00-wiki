@@ -6,7 +6,7 @@ import CatCard from "./CatCard";
 describe("CatCard", () => {
   it("renders photo wall label", () => {
     render(<CatCard onOpen={() => {}} />);
-    expect(screen.getByText("进入照片墙")).toBeInTheDocument();
+    expect(screen.getByLabelText("照片墙")).toBeInTheDocument();
   });
 
   it("renders cover image", () => {
@@ -26,6 +26,6 @@ describe("CatCard", () => {
 
   it("has aria-label", () => {
     render(<CatCard onOpen={() => {}} />);
-    expect(screen.getByLabelText("进入照片墙")).toBeInTheDocument();
+    expect(screen.getByLabelText("照片墙")).toBeInTheDocument();
   });
 });

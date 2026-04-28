@@ -21,16 +21,9 @@ export default function CatCard({ onOpen }: CatCardProps) {
       }}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
-      aria-label="进入照片墙"
+      aria-label="照片墙"
     >
-      <div style={{
-        position: "absolute", top: 14, left: 16, zIndex: 1,
-        fontSize: 11, fontWeight: 500, color: C.textMuted,
-        background: "rgba(255,255,255,0.7)", borderRadius: 999, padding: "4px 12px",
-        backdropFilter: "blur(4px)",
-      }}>
-        进入照片墙
-      </div>
+
       <img
         src="/static/照片墙资产/23417_86777360146.jpg"
         alt="照片墙封面"

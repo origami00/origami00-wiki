@@ -12,7 +12,9 @@
       "Bash(npm ls *)",
       "Bash(python3 -c \"print\\('waiting'\\)\")",
       "Bash(python3 *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(npm test *)",
+      "Bash(git restore *)"
     ]
   }
 }
