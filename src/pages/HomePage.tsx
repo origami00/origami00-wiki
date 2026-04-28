@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useClock } from "../hooks/useClock";
 import ProfileCard from "../components/ProfileCard";
 import CatCard from "../components/CatCard";
-import CalendarCard from "../components/CalendarCard";
+
 import SocialLinks from "../components/SocialLinks";
 import ClockCard from "../components/ClockCard";
 import LatestContent from "../components/LatestContent";
@@ -21,18 +21,15 @@ export default function HomePage() {
         <CatCard onOpen={() => navigate("/photo-wall")} />
       </div>
       <div className="cardStagger" style={{ animationDelay: "0.12s" }}>
-        <CalendarCard />
-      </div>
-      <div className="cardStagger" style={{ animationDelay: "0.18s" }}>
         <SocialLinks />
       </div>
-      <div className="cardStagger" style={{ animationDelay: "0.24s" }}>
+      <div className="cardStagger" style={{ animationDelay: "0.18s" }}>
         <ClockCard />
       </div>
-      <div className="cardStagger" style={{ animationDelay: "0.3s" }}>
+      <div className="cardStagger" style={{ animationDelay: "0.24s" }}>
         <LatestContent />
       </div>
-      <div className="cardStagger" style={{ animationDelay: "0.36s" }}>
+      <div className="cardStagger" style={{ animationDelay: "0.3s" }}>
         <MusicPlayer />
       </div>
     </div>
