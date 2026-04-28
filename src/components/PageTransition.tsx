@@ -28,7 +28,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
   }, [location.key, children]);
 
   return (
-    <div className={`pageTransition ${transitionStage}`}>
+    <div className={`pageTransition ${transitionStage}`} style={{ minHeight: "100%" }}>
       {displayedChildren}
     </div>
   );

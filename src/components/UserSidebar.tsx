@@ -10,10 +10,11 @@ export default function UserSidebar() {
     <aside
       className="userSidebar"
       style={{
-        ...card, height: "100%",
+        ...card, height: 440,
         display: "flex", flexDirection: "column",
         padding: "20px 14px 14px",
         background: "rgba(255,255,255,0.4)",
+        position: "sticky", top: 99,
       }}
     >
       <div className="sideProfile" style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 16 }}>

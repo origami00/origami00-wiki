@@ -52,16 +52,19 @@ export default function MainLayout() {
           display: grid;
           grid-template-columns: 180px 1fr;
           gap: 14px;
+          align-items: stretch;
         }
         .layoutSub {
           display: grid;
           grid-template-columns: 180px 1fr;
           gap: 14px;
+          align-items: stretch;
         }
         .layoutPhoto {
           display: grid;
           grid-template-columns: 180px 1fr;
-          gap: 14px;
+          gap: 16px;
+          align-items: start;
         }
 
         .sideNavBtn {
@@ -333,7 +336,7 @@ export default function MainLayout() {
 
       <main className={`layoutGrid ${home ? "layoutHome" : photoWall ? "layoutPhoto" : "layoutSub"}`}>
         <h1 className="srOnly">origami00-wiki 个人站</h1>
-        <div style={{ ...(home || photoWall ? {} : { minHeight: 500 }) }}>
+        <div style={{ alignSelf: "stretch" }}>
           <UserSidebar />
         </div>
         <PageTransition>
