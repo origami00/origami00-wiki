@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import { useClock } from "../hooks/useClock";
 import ProfileCard from "../components/ProfileCard";
 import CatCard from "../components/CatCard";
-
 import SocialLinks from "../components/SocialLinks";
 import ClockCard from "../components/ClockCard";
 import LatestContent from "../components/LatestContent";

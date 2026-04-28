@@ -1,8 +1,16 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { C } from "../tokens/design";
+import { MusicProvider, useMusic } from "../contexts/MusicContext";
 import UserSidebar from "../components/UserSidebar";
 import PageTransition from "../components/PageTransition";
+import MusicPlayer from "../components/MusicPlayer";
+import MiniPlayer from "../components/MiniPlayer";
+
+function MiniPlayerWrapper() {
+  const { playing } = useMusic();
+  return playing ? <MiniPlayer /> : null;
+}
 
 const pageTitleMap: Record<string, string> = {
   "/": "origami00-wiki",
@@ -25,6 +33,7 @@ export default function MainLayout() {
   }, [page]);
 
   return (
+    <MusicProvider>
     <div
       className="appRoot"
       style={{
@@ -42,6 +51,7 @@ export default function MainLayout() {
         @keyframes cardFadeIn { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
         @keyframes pageEnter { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: translateY(0) } }
         @keyframes pageExit { from { opacity: 1; transform: translateY(0) } to { opacity: 0; transform: translateY(-8px) } }
+        @keyframes miniPlayerIn { from { opacity: 0; transform: translateY(20px) scale(0.9) } to { opacity: 1; transform: translateY(0) scale(1) } }
 
         .layoutGrid {
           width: 100%;
@@ -331,6 +341,7 @@ export default function MainLayout() {
           .polaroidCard img { height: 100px !important; }
           .polaroidCard figcaption { font-size: 11px !important; padding: 8px 2px 10px !important; }
           .adminPanel, .adminLogin, .articlesPage, .articleDetail, .projectsPage { padding: 14px 10px !important; }
+          .miniPlayer { bottom: 12px !important; right: 12px !important; padding: 8px 10px !important; min-width: 160px !important; border-radius: 12px !important; }
         }
       `}</style>
 
@@ -343,6 +354,8 @@ export default function MainLayout() {
           <Outlet />
         </PageTransition>
       </main>
+      {!home && <MiniPlayerWrapper />}
     </div>
+    </MusicProvider>
   );
 }

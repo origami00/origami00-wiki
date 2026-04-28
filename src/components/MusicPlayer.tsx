@@ -5,7 +5,7 @@ import {
   ChevronUp, ChevronDown,
 } from "lucide-react";
 import { C, card } from "../tokens/design";
-import { useAudioPlayer, type PlayMode } from "../hooks/useAudioPlayer";
+import { useMusic, type PlayMode } from "../contexts/MusicContext";
 import { useContentManager } from "../hooks/useContentManager";
 
 const MODE_ORDER: PlayMode[] = ["list", "shuffle", "loop"];
@@ -14,12 +14,11 @@ const MODE_ICONS: Record<PlayMode, typeof ListMusic> = { list: ListMusic, shuffl
 
 export default function MusicPlayer() {
   const { music: musicList } = useContentManager();
-  const player = useAudioPlayer(musicList);
   const {
     track, playing, progress, volume, playMode, playlist, queuePos,
     toggle, next, prev, seek, setVolume, setPlayMode, playTrack, reorderPlaylist,
     elapsedStr, totalStr,
-  } = player;
+  } = useMusic();
 
   const [hov, setHov] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
