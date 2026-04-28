@@ -41,7 +41,7 @@ src/
 
 ```ts
 export const profile: Profile = {
-  name: "Origami00",                            // 名字
+  name: "origami00",                            // 名字
   bio: "短片 · 绘画 · 游戏开发探索中",          // 简介
   status: "developing",                         // 状态：online / busy / away / developing
   location: "中国",                             // 所在地
