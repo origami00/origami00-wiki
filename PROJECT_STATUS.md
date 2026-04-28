@@ -25,8 +25,7 @@
 | 响应式布局 | ✅ 完成 | 6 个断点：>1100px / 860-1100px / ≤860px / ≤640px / ≤520px / ≤480px |
 | 组件拆分 | ✅ 完成 | App.tsx 893 行拆分为 21 个独立模块（components/ + hooks/ + tokens/ + layouts/） |
 | ProfileCard 个人信息卡 | ✅ 完成 | 真实头像图片、昵称、签名、位置、状态徽章 |
-| ClockCard 实时时钟 | ✅ 完成 | UTC+8 强制时区，冒号闪烁动画 |
-| CalendarCard 日历 | ✅ 完成 | 月份切换、今日高亮 |
+| ClockCard 实时时钟+日历 | ✅ 完成 | UTC+8 强制时区，冒号闪烁动画，点击日期切换日历视图 |
 | SocialLinks 社交链接 | ✅ 完成 | GitHub / Bilibili / 抖音，自定义 PNG 图标 + 真实 URL |
 | MusicPlayer 音乐播放器 | ✅ 完成 | 真实音频播放（`<audio>`），20 首 mp3，进度条拖拽，音量/模式控制，播放列表 |
 | LatestContent 内容流 | ✅ 完成 | 4 条最新内容卡片，含标签和日期，支持管理面板动态修改 |

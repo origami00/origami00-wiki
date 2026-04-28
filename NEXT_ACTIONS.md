@@ -47,7 +47,7 @@
 - 从侧边栏导航到文章页 → 点击文章 → 查看详情 → 返回
 
 ### 3. 快照测试
-- 关键组件的渲染快照（ProfileCard、MusicPlayer、CalendarCard）
+- 关键组件的渲染快照（ProfileCard、MusicPlayer、ClockCard）
 
 ---
 

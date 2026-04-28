@@ -21,10 +21,10 @@ src/
 │   └── index.ts                    ← TypeScript 类型定义
 ├── hooks/
 │   ├── useClock.ts                 ← 时钟 + 问候语
-│   ├── useCalendar.ts              ← 日历导航
+│   ├── useCalendar.ts              ← 日历导航（ClockCard 内使用）
 │   ├── useAudioPlayer.ts           ← 音频播放器
 │   └── useContentManager.ts        ← 内容管理（localStorage CRUD）
-├── components/                     ← 13 个独立组件
+├── components/                     ← 12 个独立组件
 ├── layouts/
 │   └── MainLayout.tsx              ← 主布局（CSS + sidebar + Outlet）
 ├── pages/                          ← 6 个页面组件（含管理面板）
@@ -42,7 +42,7 @@ src/
 ```ts
 export const profile: Profile = {
   name: "Origami00",                            // 名字
-  bio: "ai短片 · 绘画 · 游戏开发探索中",          // 简介
+  bio: "短片 · 绘画 · 游戏开发探索中",          // 简介
   status: "developing",                         // 状态：online / busy / away / developing
   location: "中国",                             // 所在地
 };

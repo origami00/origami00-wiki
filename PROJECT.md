@@ -52,7 +52,7 @@ src/
 │   └── design.ts           # 设计令牌 C, card, iconMap
 ├── hooks/
 │   ├── useClock.ts         # 实时时钟 hook
-│   ├── useCalendar.ts      # 日历导航 hook
+│   ├── useCalendar.ts      # 日历导航 hook（ClockCard 内使用）
 │   ├── useAudioPlayer.ts   # 音频播放器 hook
 │   └── useContentManager.ts # 内容管理 hook（localStorage CRUD）
 ├── components/
@@ -60,10 +60,9 @@ src/
 │   ├── Avatar.tsx           # 头像
 │   ├── CatSitting.tsx       # 猫咪 SVG
 │   ├── ProfileCard.tsx      # 个人信息卡
-│   ├── ClockCard.tsx        # 时钟卡
+│   ├── ClockCard.tsx        # 时钟卡（含日历切换）
 │   ├── CatCard.tsx          # 猫咪卡片
 │   ├── SocialLinks.tsx      # 社交链接
-│   ├── CalendarCard.tsx     # 日历卡
 │   ├── LatestContent.tsx    # 最新动态
 │   ├── MusicPlayer.tsx      # 音乐播放器
 │   ├── UserSidebar.tsx      # 侧边导航
@@ -282,11 +281,10 @@ import { C, card, iconMap } from "../tokens/design";
 <div className="masonryColumns">
   <ProfileCard delay={0} />
   <CatCard delay={1} />
-  <CalendarCard delay={2} />
-  <SocialLinks delay={3} />
-  <ClockCard delay={4} />
-  <LatestContent delay={5} />
-  <MusicPlayer delay={6} />
+  <SocialLinks delay={2} />
+  <ClockCard delay={3} />
+  <LatestContent delay={4} />
+  <MusicPlayer delay={5} />
 </div>
 ```
 
@@ -455,11 +453,14 @@ localStorage key：`origami00-articles` / `origami00-projects` / `origami00-phot
 - 显示问候语（由 `useClock()` 提供）、头像、名称、状态、简介、位置
 - hover 效果：上浮 + 阴影加深
 
-### ClockCard — 时钟卡
+### ClockCard — 时钟卡（含日历）
 
 - 等宽字体，冒号 `blink` 动画
 - UTC+8 标识
 - 秒数半透明显示
+- **点击日期切换到日历视图**，显示当月月历网格
+- 日历视图支持 prev/next 月份切换，今日高亮
+- 点击时钟图标返回时钟视图
 
 ### CatCard — 猫咪插画卡
 
@@ -470,12 +471,6 @@ localStorage key：`origami00-articles` / `origami00-projects` / `origami00-phot
 
 - 3 个图标按钮，使用自定义 PNG 图标
 - hover 上浮放大
-
-### CalendarCard — 日历卡
-
-- 月份切换（prev/next）
-- 今天日期高亮（薄荷绿实心）
-- 周末文字使用 `C.accent`
 
 ### LatestContent — 最新动态
 

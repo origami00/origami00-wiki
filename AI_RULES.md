@@ -50,7 +50,7 @@ src/
 │   └── design.ts           # 设计令牌 C, card, iconMap
 ├── hooks/
 │   ├── useClock.ts         # 实时时钟 hook
-│   ├── useCalendar.ts      # 日历导航 hook
+│   ├── useCalendar.ts      # 日历导航 hook（ClockCard 内使用）
 │   ├── useAudioPlayer.ts   # 音频播放器 hook
 │   └── useContentManager.ts # 内容管理 hook（localStorage CRUD）
 ├── components/
@@ -58,10 +58,9 @@ src/
 │   ├── Avatar.tsx           # 头像
 │   ├── CatSitting.tsx       # 猫咪 SVG
 │   ├── ProfileCard.tsx      # 个人信息卡
-│   ├── ClockCard.tsx        # 时钟卡
+│   ├── ClockCard.tsx        # 时钟卡（含日历切换）
 │   ├── CatCard.tsx          # 猫咪卡片
 │   ├── SocialLinks.tsx      # 社交链接
-│   ├── CalendarCard.tsx     # 日历卡
 │   ├── LatestContent.tsx    # 最新动态
 │   ├── MusicPlayer.tsx      # 音乐播放器
 │   ├── UserSidebar.tsx      # 侧边导航
@@ -183,15 +182,15 @@ public/
 
 ## 10. 特殊组件规则
 
-### 10.1 ClockCard
+### 10.1 ClockCard（含日历）
 - 时钟每秒更新，注意性能影响
 - 时区强制 UTC+8
 - 冒号使用 `blink` 动画
-
-### 10.2 CalendarCard
-- 月份切换使用 offset 机制
-- 今日日期高亮显示
+- 点击日期字符串切换到日历视图
+- 日历使用 `useCalendar` hook，月份切换使用 offset 机制
+- 今日日期高亮显示（薄荷绿实心圆）
 - 星期标题固定为 `一 二 三 四 五 六 日`
+- 时钟图标按钮返回时钟视图
 
 ### 10.3 MusicPlayer
 - 使用 `<audio>` 元素播放真实 mp3
