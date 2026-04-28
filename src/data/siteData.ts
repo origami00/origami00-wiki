@@ -2,7 +2,7 @@ import type { ContentItem, MusicTrack, NavItem, PhotoWallItem, Profile, SocialLi
 
 export const profile: Profile = {
   name: "Origami00",
-  bio: "ai短片 · 绘画 · 游戏开发探索中",
+  bio: "短片 · 绘画 · 游戏开发探索中",
   status: "developing",
   location: "中国",
 };
